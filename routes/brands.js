@@ -41,6 +41,7 @@ router.post('/create', async (req, res) => {
             brand.set('description', form.data.description);
             brand.set('logo_image_url', form.data.logo_image_url);
             await brand.save();
+            req.flash("success_messages", `New Brand ${brand.get('name')} has been created.`);
             res.redirect('/brands');
         },
         'error': (form) => {
@@ -78,6 +79,7 @@ router.post('/:brand_id/update', async (req, res) => {
         'success': async (form) => {
             brand.set(form.data);
             brand.save();
+            req.flash("success_messages", `Changes to Brand ${brand.get('name')} has been saved successfully.`);
             res.redirect('/brands');
         },
         'error': async (form) => {
@@ -103,10 +105,10 @@ router.get('/:brand_id/delete', async (req, res) => {
 router.post('/:brand_id/delete', async (req, res) => {
     const brandId = req.params.brand_id;
     const brand = await getBrandById(brandId);
-    
+    const brandName = brand.get('name');
     await brand.destroy();
+    req.flash("success_messages", `Deleted Brand ${brandName} successfully.`);
     res.redirect('/brands');
 })
-
 
 module.exports = router

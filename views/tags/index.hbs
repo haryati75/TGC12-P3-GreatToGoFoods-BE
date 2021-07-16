@@ -8,7 +8,7 @@ Tags
 <header class="">
     <h1>Tags Admininstration</h1>
     <p>Tags are keywords that can attached to a Product or Customers to show their interests. </p>
-    <a href="tags/create" class="btn btn-success btn-sm">Create</a>
+    <a href="/tags/create" class="btn btn-success btn-sm">Create</a>
 </header>
 
 <table class="table">
@@ -25,8 +25,8 @@ Tags
                 <td>{{this.id}}</td>
                 <td>{{this.name}}</td>
                 <td>
-                    <a href="tags/{{this.id}}/update" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="tags/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="/tags/{{this.id}}/update" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/tags/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
         {{/each}}
