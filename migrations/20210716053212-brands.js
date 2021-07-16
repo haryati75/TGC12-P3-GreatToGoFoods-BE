@@ -22,7 +22,7 @@ exports.up = function(db) {
       'length': 150,
       'notNull': true
     },
-    'image_url': {
+    'logo_image_url': {
       'type': 'string'
     },
     'description': {

@@ -21,10 +21,16 @@ app.use(express.urlencoded({ extended: false }));
 
 // import in routes
 const landingRoutes = require('./routes/landing');
+const brandRoutes = require('./routes/brands')
+const categoriesRoutes = require('./routes/categories')
+const tagsRoutes = require('./routes/tags')
 
 async function main() {
     // Main landing page and other static contents
     app.use('/', landingRoutes);
+    app.use('/brands', brandRoutes);
+    app.use('/categories', categoriesRoutes);
+    app.use('/tags', tagsRoutes);
 }
 
 main();

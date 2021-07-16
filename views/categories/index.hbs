@@ -1,0 +1,38 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Categories
+{{/block}}
+
+{{#block 'content'}}
+<header class="">
+    <h1>Categories Admininstration</h1>
+    <p>Each product will need to be tied to a category (Meals, Juices, Snacks) which controls the appropriate fields for input. Only for System Admin access.</p>
+    <a href="categories/create" class="btn btn-success btn-sm">Create</a>
+</header>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each categories}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.name}}</td>
+                <td>
+                    <a href="categories/{{this.id}}/update" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="categories/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{/block}}
+
+{{/extends}}
