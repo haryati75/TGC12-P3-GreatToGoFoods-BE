@@ -4,11 +4,20 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <title>Admin - {{#block 'title'}}{{/block}}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-    <title>Admin - {{#block 'title'}}{{/block}}</title>
+    <style>
+      footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+      }
+    </style>
+   
   </head>
   <body>
 
@@ -17,17 +26,17 @@
       <div class="container-fluid">
         <a href="/" class="navbar-brand">GreatToGo Foods eShop</a>
 
-        <span><a href="about/" class="nav-item nav-link active">Products</a></span>
-        <span><a href="contact/" class="nav-item nav-link active">Packages</a></span>           
+        <span><a href="/about/" class="nav-item nav-link active">Products</a></span>
+        <span><a href="/contact/" class="nav-item nav-link active">Packages</a></span>           
          | 
-        <span><a href="fulfilments/" class="nav-item nav-link active">Stocks</a></span>
-        <span><a href="orders/" class="nav-item nav-link active">Orders</a></span>
-        <span><a href="payments/" class="nav-item nav-link active">Payments</a></span>
-        <span><a href="customers/" class="nav-item nav-link active">Customers</a></span>
+        <span><a href="/fulfilments/" class="nav-item nav-link active">Stocks</a></span>
+        <span><a href="/orders/" class="nav-item nav-link active">Orders</a></span>
+        <span><a href="/payments/" class="nav-item nav-link active">Payments</a></span>
+        <span><a href="/customers/" class="nav-item nav-link active">Customers</a></span>
          |
-        <span><a href="brands/" class="nav-item nav-link active">Brands</a></span>
-        <span><a href="categories/" class="nav-item nav-link active">Categories</a></span>
-        <span><a href="tags/" class="nav-item nav-link active">Tags</a></span>
+        <span><a href="/brands/" class="nav-item nav-link active">Brands</a></span>
+        <span><a href="/categories/" class="nav-item nav-link active">Categories</a></span>
+        <span><a href="/tags/" class="nav-item nav-link active">Tags</a></span>
 
         <div>
           {{#if user}}
@@ -49,22 +58,9 @@
     </div>
 
     <footer>
-
-      <div class="accordion" id="base-footer">
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              GreatToGo | Credits
-            </button>
-          </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              <strong>Trent Global College (Singapore)</strong> | Developed by Haryati Hassan, Aug 2021 | For educational purpose only.
-            </div>
-          </div>
+        <div class="btn btn-dark">
+          <strong>Trent Global College (Singapore)</strong> | Developed by Haryati Hassan, Aug 2021 | For educational purpose only.
         </div>
-
-
     </footer>
 
     <!-- Bootstrap Bundle with Popper -->

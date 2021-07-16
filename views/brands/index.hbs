@@ -8,7 +8,7 @@ Brands
 <header class="">
     <h1>Brands Admininstration</h1>
     <p>The brands information will be shown on the website for Products that are tied to a brand. Ensure that all logo links are working.</p>
-    <a href="brands/create" class="btn btn-success btn-sm">Create</a>
+    <a href="/brands/create" class="btn btn-success">Create</a>
 </header>
 
 <table class="table">
@@ -33,8 +33,8 @@ Brands
                     {{/if}}
                 </td>
                 <td>
-                    <a href="brands/{{this.id}}/update" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="brands/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="/brands/{{this.id}}/update" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/brands/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
         {{/each}}
