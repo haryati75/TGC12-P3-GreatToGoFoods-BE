@@ -40,6 +40,15 @@ app.use((req, res, next) => {
     next();
 })
 
+// share the user data with hbs files
+app.use((req, res, next) => {
+    res.locals.user = req.session.user;
+    next();
+})
+
+// import in the checkAuth middleware
+const { checkIfAuthenticated, checkIfAuthenticatedAdmin } = require('./middlewares');
+
 // import in routes
 const landingRoutes = require('./routes/landing');
 const brandRoutes = require('./routes/brands')
@@ -53,9 +62,9 @@ const api = {
 async function main() {
     // Main landing page and other static contents
     app.use('/', landingRoutes);
-    app.use('/brands', brandRoutes);
-    app.use('/categories', categoriesRoutes);
-    app.use('/tags', tagsRoutes);
+    app.use('/brands', checkIfAuthenticated, brandRoutes);
+    app.use('/categories', checkIfAuthenticatedAdmin, categoriesRoutes);
+    app.use('/tags', checkIfAuthenticated, tagsRoutes);
     app.use('/users', usersRoutes);
     app.use('/api/lists', api.lists);
 }

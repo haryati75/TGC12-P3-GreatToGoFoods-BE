@@ -10,6 +10,7 @@
 
     <style>
       header {
+        margin-top: 3px auto !important;
         background-color: beige;
         border-bottom: dashed 1px grey;
         text-align: center;
@@ -31,24 +32,26 @@
       <div class="container-fluid">
         <a href="/" class="navbar-brand">GreatToGo Foods eShop</a>
 
-        <span><a href="/about/" class="nav-item nav-link active">Products</a></span>
-        <span><a href="/contact/" class="nav-item nav-link active">Packages</a></span>           
-         | 
-        <span><a href="/fulfilments/" class="nav-item nav-link active">Stocks</a></span>
-        <span><a href="/orders/" class="nav-item nav-link active">Orders</a></span>
-        <span><a href="/payments/" class="nav-item nav-link active">Payments</a></span>
-        <span><a href="/customers/" class="nav-item nav-link active">Customers</a></span>
-         |
-        <span><a href="/brands/" class="nav-item nav-link active">Brands</a></span>
-        <span><a href="/tags/" class="nav-item nav-link active">Tags</a></span>
+          {{#if user}}
+          <span><a href="/about/" class="nav-item nav-link active">Products</a></span>
+          <span><a href="/contact/" class="nav-item nav-link active">Packages</a></span>           
+
+          <span><a href="/fulfilments/" class="nav-item nav-link active">Stocks</a></span>
+          <span><a href="/orders/" class="nav-item nav-link active">Orders</a></span>
+          <span><a href="/payments/" class="nav-item nav-link active">Payments</a></span>
+          <span><a href="/customers/" class="nav-item nav-link active">Customers</a></span>
+
+          <span><a href="/brands/" class="nav-item nav-link active">Brands</a></span>
+          <span><a href="/tags/" class="nav-item nav-link active">Tags</a></span>
+          {{/if}}
 
         <div>
           {{#if user}}
-            Hi, {{user.name}}
+            <span><a href="/users/profile" class="nav-item nav-link active"></a>Hi, {{user.name}}</span>
             <a href="/users/logout" class="ml-3 btn btn-danger btn-sm">Logout</a>
           {{else}}
             Hi, stranger
-            <a href="/users/login" class="ml-3 btn btn-primary btn-sm">Login</a>
+            <a href="/users/login" class="btn btn-primary btn-sm">Login</a>
           {{/if}}
         </div>
       </div>
