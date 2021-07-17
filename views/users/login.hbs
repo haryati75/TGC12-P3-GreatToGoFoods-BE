@@ -1,0 +1,20 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Users
+{{/block}}
+
+{{#block 'content'}}
+
+<header class="">
+    <h1>Please login with your account below!</h1>
+</header>
+
+<form method="POST">
+    {{{form}}}
+    <input type="submit" value="Login" class="btn btn-primary my-3"/>
+</form>
+
+{{/block}}
+
+{{/extends}}

@@ -1,0 +1,26 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Users
+{{/block}}
+
+{{#block 'content'}}
+
+<header>
+    <h1>User Profile:</h1>
+</header>
+
+<div>
+    <ul>
+        <li>Username: {{user.name}}</li>
+        <li>Email:{{user.email}}</li>
+        <li>Role: {{user.role}}</li>
+        <li>Last login on: {{user.last_login_on}}</li>
+    </ul>
+    <a href="/users/change-password" class="ml-3 btn btn-secondary">Change Password</a>
+    <a href="/users/logout" class="ml-3 btn btn-danger">Logout</a>
+</div>
+
+{{/block}}
+
+{{/extends}}
