@@ -43,6 +43,7 @@ const landingRoutes = require('./routes/landing');
 const brandRoutes = require('./routes/brands')
 const categoriesRoutes = require('./routes/categories')
 const tagsRoutes = require('./routes/tags')
+const usersRoutes = require('./routes/users')
 const api = {
     lists: require('./routes/api/lists')
 }
@@ -53,6 +54,7 @@ async function main() {
     app.use('/brands', brandRoutes);
     app.use('/categories', categoriesRoutes);
     app.use('/tags', tagsRoutes);
+    app.use('/users', usersRoutes);
     app.use('/api/lists', api.lists);
 }
 

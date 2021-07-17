@@ -17,6 +17,11 @@ exports.setup = function(options, seedLink) {
 exports.up = function(db) {
   return db.createTable('users', {
     'id': { 'type': 'int', 'unsigned': true, 'primaryKey': true, 'autoIncrement': true },
+    'name': {
+      'type': 'string',
+      'length': 200,
+      'notNull': true
+    },
     'email': {
       'type': 'string',
       'notNull': true
@@ -29,6 +34,16 @@ exports.up = function(db) {
       'type': 'string',
       'length': 50,
       'notNull': true
+    },
+    'last_login_on': {
+      'type': 'datetime'
+    },
+    'created_on': {
+      'type': 'datetime',
+      'notNull': true
+    },
+    'modified_on': {
+      'type': 'datetime'
     }
   });
 };
