@@ -1,5 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
+
+const getHashedPassword = (password) => {
+    const sha256 = crypto.createHash('sha256');
+    const hash = sha256.update(password).digest('base64');
+    return hash;
+}
 
 // import in the model
 const { User } = require('../models');
@@ -17,21 +24,34 @@ router.get('/register', (req, res) => {
 })
 
 router.post('/register', (req, res) => {
-    // save new user
     const registerUserForm = createUserRegistrationForm();
     registerUserForm.handle(req, {
         'success': async (form) => {
-            const user = new User({
-                'name': form.data.name,
-                'password': form.data.password,
+
+            // check if similar user email exists
+            let user = await User.where({
                 'email': form.data.email
+            }).fetch({
+                require: false
             })
-            // set the role to "Not Verified"
-            user.set('role',"Not Verified");
-            user.set('created_on', new Date());
-            await user.save();
-            req.flash("success_messages", "User registered successfully. Please wait for Admin to verify your account.")
-            res.redirect('/');
+
+            if (user) {
+                req.flash("error_messages", "Registration failed. Your credential already exists.")
+                res.redirect('/');
+            } else {
+                // save new user
+                user = new User({
+                    'name': form.data.name,
+                    'password': getHashedPassword(form.data.password),
+                    'email': form.data.email
+                })
+                // set the role to "Not Verified"
+                user.set('role',"Not Verified");
+                user.set('created_on', new Date());
+                await user.save();
+                req.flash("success_messages", "User registered successfully. Please wait for Admin to verify your account.")
+                res.redirect('/');
+            }
         },
         'error': (form) => {
             res.render('users/register', {
@@ -59,13 +79,12 @@ router.post('/login', (req, res) => {
             }).fetch({
                 require: false
             })
-
             if (!user) {
                 req.flash("error_messages", "Sorry, you have provided the wrong credentials.");
                 res.redirect('/users/login');
             } else {
                 // check password matches
-                if (user.get('password') === form.data.password) {
+                if (user.get('password') === getHashedPassword(form.data.password)) {
                     // add to the session that login succeed
 
                     // store user details to the session

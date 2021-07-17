@@ -3,6 +3,7 @@ const hbs = require("hbs");
 const wax = require("wax-on");
 const session = require('express-session');
 const flash = require('connect-flash');
+const FileStore = require('session-file-store')(session);
 require("dotenv").config();
 
 // create an instance of express app
@@ -10,6 +11,7 @@ let app = express();
 
 // setup sessions
 app.use(session({
+    'store': new FileStore(),
     secret: process.env.SESSION_SECRET_KEY,
     resave: false,
     saveUninitialized: true
