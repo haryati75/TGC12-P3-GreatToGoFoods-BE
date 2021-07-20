@@ -76,7 +76,6 @@ router.post('/create', async (req, res) => {
                 req.flash("error_messages", "Error saving new record to the database. Check with administrator.");
                 res.redirect('/products');
             }
-
         },
         'error': (form) => {
             res.render('products/create', {
@@ -169,9 +168,6 @@ router.post('/:product_id/update', async (req, res) => {
                 req.flash("error_messages", "Error saving record to the database. Check with administrator.");
                 res.redirect('/products');
             }
-
-            req.flash("success_messages", ``);
-            res.redirect('/products');
         },
         'error': async (form) => {
             res.render('products/update', {
