@@ -7,6 +7,9 @@ const Product = bookshelf.model('Product', {
     },
     brand() {
         return this.belongsTo('Brand')
+    },
+    tags() {
+        return this.belongsToMany('Tag');
     }
 })
 
@@ -25,7 +28,10 @@ const Category = bookshelf.model('Category', {
 })
 
 const Tag = bookshelf.model('Tag', {
-    tableName: 'tags'
+    tableName: 'tags',
+    products() {
+        return this.belongsToMany('Product');
+    }
 })
 
 const User = bookshelf.model('User', {

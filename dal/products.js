@@ -7,7 +7,7 @@ const getProductById = async (productId) => {
         'id': productId
     }).fetch({
         require: true,
-        withRelated: ['category', 'brand']
+        withRelated: ['category', 'brand', 'tags']
     });
     return product;
 }

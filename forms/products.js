@@ -6,7 +6,7 @@ const fields = forms.fields;
 const validators = forms.validators;
 const widgets = forms.widgets;
 
-const createProductForm = (categories, brands) => {
+const createProductForm = (categories, brands, tags) => {
     return forms.create({
         'category_id': fields.string({
             label: 'Category',
@@ -27,6 +27,15 @@ const createProductForm = (categories, brands) => {
             },
             widget: widgets.select(),
             choices: brands
+        }),
+        'tags': fields.string({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.multipleSelect(),
+            choices: tags
         }),
         'SKU': fields.string({
             required: true,

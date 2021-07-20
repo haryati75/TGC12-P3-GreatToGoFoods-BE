@@ -5,7 +5,8 @@ const router = express.Router();
 const { Product } = require('../models');
 const { getProductById } = require('../dal/products');
 const { getAllCategories } = require('../dal/categories');
-const { getAllBrands } = require('../dal/brands')
+const { getAllBrands } = require('../dal/brands');
+const { getAllTags } = require('../dal/tags');
 
 // import the Forms
 const { bootstrapField } = require('../forms');
@@ -17,7 +18,7 @@ const { createProductForm } = require('../forms/products')
 router.get('/', async (req, res)=> {
     // fetch all the Products
     let products = await Product.collection().fetch({
-        withRelated: ['category', 'brand']
+        withRelated: ['category', 'brand', 'tags']
     });
 
     // convert collection to JSON and render via hbs
@@ -33,7 +34,8 @@ router.get('/create', async (req, res) => {
     // lists to render in the forms
     const allCategories = await getAllCategories();
     const allBrands = await getAllBrands();
-    const productForm = createProductForm(allCategories, allBrands);
+    const allTags = await getAllTags();
+    const productForm = createProductForm(allCategories, allBrands, allTags);
 
     res.render('products/create', {
         'form' : productForm.toHTML(bootstrapField)
@@ -43,19 +45,30 @@ router.get('/create', async (req, res) => {
 router.post('/create', async (req, res) => {
     const allCategories = await getAllCategories();
     const allBrands = await getAllBrands();
-    const productForm = createProductForm(allCategories, allBrands);
+    const allTags = await getAllTags();
+    const productForm = createProductForm(allCategories, allBrands, allTags);
 
     productForm.handle(req, {
         'success': async(form) => {
+            // separate out tags from the other product data
+            let {tags, ...productData} = form.data;
+
             // make sure the names of the form fields matches with database fields 
-            const product = new Product(form.data);
+            const product = new Product(productData);
 
             // add fields that are not in the form or hidden
             product.set('date_created', new Date());
             product.set('date_modified', new Date());
 
             try {
+                // save the product data
                 let response = await product.save();
+                
+                // save the many-to-many relationship
+                if (tags) {
+                    await product.tags().attach(tags.split(","));
+                }
+
                 req.flash("success_messages", `New Product ${response.get('name')} has been created.`);
                 res.redirect('/products');
             } catch (e) {
@@ -82,7 +95,8 @@ router.get('/:product_id/update', async (req, res) => {
 
     const allCategories = await getAllCategories();
     const allBrands = await getAllBrands();
-    const productForm = createProductForm(allCategories, allBrands);
+    const allTags = await getAllTags();
+    const productForm = createProductForm(allCategories, allBrands, allTags);
     productForm.fields.name.value = product.get('name');
     productForm.fields.description.value = product.get('description');
     productForm.fields.image_url.value = product.get('image_url');
@@ -109,6 +123,9 @@ router.get('/:product_id/update', async (req, res) => {
     productForm.fields.brand_id.value = product.get('brand_id');
 
     // many-to-many tags
+    // fill in the multi-select for the tags
+    let selectedTags = await product.related('tags').pluck('id');
+    productForm.fields.tags.value = selectedTags;
 
     res.render('products/update', {
         'form': productForm.toHTML(bootstrapField),
@@ -122,15 +139,29 @@ router.post('/:product_id/update', async (req, res) => {
 
     const allCategories = await getAllCategories();
     const allBrands = await getAllBrands();
-    const productForm = createProductForm(allCategories, allBrands);
+    const allTags = await getAllTags();
+    const productForm = createProductForm(allCategories, allBrands, allTags);
 
     productForm.handle(req, {
         'success': async (form) => {
-            product.set(form.data);
+            let { tags, ...productData } = form.data;
+            product.set(productData);
             product.set('date_modified', new Date());
 
             try {
                 let response = await product.save();
+
+                // update the many-to-many relationship for tags
+                let tagIds = tags.split(',');
+                let existingTagIds = await product.related('tags').pluck('id');
+
+                // remove all the tags that aren't selected anymore
+                let toRemove = existingTagIds.filter( id => tagIds.includes(id) === false );
+                await product.tags().detach(toRemove);
+
+                // add in all the tags selected in the form
+                await product.tags().attach(tagIds);
+
                 req.flash("success_messages", `Changes to Product ${response.get('name')} has been saved successfully.`);
                 res.redirect('/products');
             } catch (e) {
