@@ -12,12 +12,19 @@ const getCategoryById = async (categoryId) => {
 }
 
 // useful for rendering lists
-const getAllCategories = async () => {
+const getAllCategoriesJSON = async () => {
     return await Category.fetchAll().map( category => {
-        return ({ id: category.get('id'), name: category.get('name')  })
+        return ({ "id": category.get('id'), "name": category.get('name')  })
+    });
+}
+const getAllCategories = async () => {
+    // Caolan Forms format for fields declared with choices
+    // Requires: [[ key, label ]]
+    return await Category.fetchAll().map( category => {
+        return ([ category.get('id'), category.get('name') ])
     });
 }
 
 module.exports = {
-    getCategoryById, getAllCategories
+    getCategoryById, getAllCategories, getAllCategoriesJSON
 }

@@ -36,33 +36,25 @@ exports.up = function(db) {
     'ingredients': {
       'type': 'text'
     },
-    'unit_base_price': {
-      'type': 'int'
-    }, 
-    'unit_cost': {
-      'type': 'int'
-    }, 
-    'unit_of_measure': {
+    'unit_base_price': { 'type': 'int', defaultValue: 0 }, 
+    'unit_cost': { 'type': 'int', defaultValue: 0 }, 
+    'unit_of_measure': { 
       'type': 'string',
       'length': 100
     },
     'juice_serving_size_ml': { 'type': 'int', defaultValue: 0 }, 
-    'kcal': { 'type': 'int' }, 
-    'protein_gm': { 'type': 'int' }, 
-    'carbs_gm': { 'type': 'int' }, 
-    'fats_gm': { 'type': 'int' }, 
-    'sugars_gm': { 'type': 'int' }, 
-    'fibre_gm': { 'type': 'int' }, 
+    'kcal': { 'type': 'int', defaultValue: 0 }, 
+    'protein_gm': { 'type': 'int', defaultValue: 0 }, 
+    'carbs_gm': { 'type': 'int', defaultValue: 0 }, 
+    'fats_gm': { 'type': 'int', defaultValue: 0 }, 
+    'sugars_gm': { 'type': 'int', defaultValue: 0 }, 
+    'fibre_gm': { 'type': 'int', defaultValue: 0 }, 
     'country_source': {
       'type': 'string',
       'length': 100
     },
-    'quantity_in_stock': {
-      'type': 'int'
-    },
-    'quantity_to_fulfill': {
-      'type': 'int'
-    },
+    'quantity_in_stock': { 'type': 'int', defaultValue: 0 },
+    'quantity_to_fulfill': { 'type': 'int', defaultValue: 0 },
     'date_created' : {
       'type': 'datetime',
       'notNull': true 

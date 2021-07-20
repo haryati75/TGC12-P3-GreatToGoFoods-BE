@@ -16,6 +16,7 @@ Products
         <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Category</th>
             <th>Description</th>
             <th>Image</th>
             <th></th>
@@ -26,6 +27,7 @@ Products
             <tr>
                 <td>{{this.id}}</td>
                 <td>{{this.name}}</td>
+                <td>{{this.category.name}}</td>
                 <td>{{this.description}}</td>
                 <td>
                     {{#if this.image_url}}

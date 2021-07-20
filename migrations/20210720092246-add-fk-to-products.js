@@ -32,7 +32,7 @@ exports.up = function(db) {
 };
 
 exports.down = function(db) {
-  return db.dropColumn('products', 'product_category_fk');
+  return null;
 };
 
 exports._meta = {

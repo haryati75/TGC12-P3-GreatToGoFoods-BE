@@ -6,8 +6,18 @@ const fields = forms.fields;
 const validators = forms.validators;
 const widgets = forms.widgets;
 
-const createProductForm = () => {
+const createProductForm = (categories) => {
     return forms.create({
+        'category_id': fields.string({
+            label: 'Category',
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.select(),
+            choices: categories
+        }),
         'SKU': fields.string({
             required: true,
             errorAfterField: true,
@@ -46,7 +56,7 @@ const createProductForm = () => {
                 label: ['form-label']
             }
         }),
-        'unit_base_price': fields.string({
+        'unit_base_price': fields.number({
             required: true,
             errorAfterField: true,
             cssClasses: {
@@ -54,7 +64,7 @@ const createProductForm = () => {
             },
             'validators': [validators.integer()]
         }),
-        'unit_cost': fields.string({
+        'unit_cost': fields.number({
             required: true,
             errorAfterField: true,
             cssClasses: {
@@ -69,49 +79,56 @@ const createProductForm = () => {
                 label: ['form-label']
             }
         }),
-        'juice_serving_size_ml': fields.string({
+        'juice_serving_size_ml': fields.number({
+            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
             'validators': [validators.integer()]
         }),
-        'kcal': fields.string({
+        'kcal': fields.number({
+            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
             'validators': [validators.integer()]
         }),
-        'protein_gm': fields.string({
+        'protein_gm': fields.number({
+            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
             'validators': [validators.integer()]
         }),
-        'carbs_gm': fields.string({
+        'carbs_gm': fields.number({
+            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
             'validators': [validators.integer()]
         }),
-        'fats_gm': fields.string({
+        'fats_gm': fields.number({
+            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
             'validators': [validators.integer()]
         }),
-        'sugars_gm': fields.string({
+        'sugars_gm': fields.number({
+            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
             'validators': [validators.integer()]
         }),
-        'fibre_gm': fields.string({
+        'fibre_gm': fields.number({
+            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
@@ -124,34 +141,21 @@ const createProductForm = () => {
                 label: ['form-label']
             }
         }),
-        'quantity_in_stock': fields.string({
-            errorAfterField: true,
-            cssClasses: {
-                label: ['form-label']
-            },
-            'validators': [validators.integer()]
-        }),
-        'quantity_to_fulfill': fields.string({
-            errorAfterField: true,
-            cssClasses: {
-                label: ['form-label']
-            },
-            'validators': [validators.integer()]
-        }),
-        'date_created': fields.date({
+        'quantity_in_stock': fields.number({
             required: true,
             errorAfterField: true,
-            widget: widgets.date(),
             cssClasses: {
                 label: ['form-label']
             },
-            validators: [validators.date()]
+            'validators': [validators.integer()]
         }),
-        'date_modified': fields.date({
-            widget: widgets.hidden(),
+        'quantity_to_fulfill': fields.number({
+            required: true,
+            errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
-            }
+            },
+            'validators': [validators.integer()]
         })
     })
 }

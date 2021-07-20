@@ -1,7 +1,10 @@
 const bookshelf = require('../bookshelf');
 
 const Product = bookshelf.model('Product', {
-    tableName: 'products'
+    tableName: 'products',
+    category() {
+        return this.belongsTo('Category')
+    }
 })
 
 const Brand = bookshelf.model('Brand', {
@@ -9,7 +12,10 @@ const Brand = bookshelf.model('Brand', {
 })
 
 const Category = bookshelf.model('Category', {
-    tableName: 'categories'
+    tableName: 'categories',
+    products() {
+        return this.hasMany('Product')
+    }
 })
 
 const Tag = bookshelf.model('Tag', {
