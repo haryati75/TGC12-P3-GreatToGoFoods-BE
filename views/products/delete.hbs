@@ -1,21 +1,21 @@
 {{#extends 'base'}}
 
 {{#block 'title'}}
-Tags
+Products
 {{/block}}
 
 {{#block 'content'}}
 
 <header class="">
-    <h1>Delete Tag: {{tag.name}}</h1>
+    <h1>Delete Product: {{product.name}}</h1>
 </header>
 
 <form method="POST">
     <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
     <div class="alert alert-danger">
-        <p>Are you sure you want to delete {{tag.name}}?</p> 
+        <p>Are you sure you want to delete {{product.name}}?</p> 
         <input type="submit" value="Yes" class="btn btn-danger"/>
-        <a href="/tags" class="btn btn-success">No</a>
+        <a href="/products" class="btn btn-success">No</a>
     </div>
 </form>
 

@@ -13,9 +13,9 @@ const getTagById = async (tagId) => {
 
 // useful for rendering lists
 const getAllTags = async () => {
-    return await Tag.fetchAll().map( tag => 
-        [ tag.get('id'), tag.get('name') ]
-    );
+    return await Tag.fetchAll().map( tag => {
+        return ({ id: tag.get('id'), name: tag.get('name')  })
+    });
 }
 
 module.exports = {

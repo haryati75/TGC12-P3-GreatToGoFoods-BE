@@ -13,9 +13,9 @@ const getBrandById = async (brandId) => {
 
 // useful for rendering lists
 const getAllBrands = async () => {
-    return await Brand.fetchAll().map( brand => 
-        [ brand.get('id'), brand.get('name') ]
-    );
+    return await Brand.fetchAll().map( brand => {
+        return ({ id: brand.get('id'), name: brand.get('name')  })
+    });
 }
 
 module.exports = {

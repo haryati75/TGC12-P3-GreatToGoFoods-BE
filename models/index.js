@@ -1,19 +1,23 @@
 const bookshelf = require('../bookshelf');
 
+const Product = bookshelf.model('Product', {
+    tableName: 'products'
+})
+
 const Brand = bookshelf.model('Brand', {
-    tableName: 'brands',
+    tableName: 'brands'
 })
 
 const Category = bookshelf.model('Category', {
-    tableName: 'categories',
+    tableName: 'categories'
 })
 
 const Tag = bookshelf.model('Tag', {
-    tableName: 'tags',
+    tableName: 'tags'
 })
 
 const User = bookshelf.model('User', {
-    tableName: 'users',
+    tableName: 'users'
 })
 
-module.exports = { Brand, Category, Tag, User };
+module.exports = { Product, Brand, Category, Tag, User };

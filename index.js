@@ -4,6 +4,7 @@ const wax = require("wax-on");
 const session = require('express-session');
 const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
+const csrf = require('csurf')
 require("dotenv").config();
 
 // create an instance of express app
@@ -51,22 +52,52 @@ const { checkIfAuthenticated, checkIfAuthenticatedAdmin } = require('./middlewar
 
 // import in routes
 const landingRoutes = require('./routes/landing');
-const brandRoutes = require('./routes/brands')
-const categoriesRoutes = require('./routes/categories')
-const tagsRoutes = require('./routes/tags')
-const usersRoutes = require('./routes/users')
+const productRoutes = require('./routes/products');
+const brandRoutes = require('./routes/brands');
+const categoriesRoutes = require('./routes/categories');
+const tagsRoutes = require('./routes/tags');
+const usersRoutes = require('./routes/users');
 const api = {
     lists: require('./routes/api/lists')
 }
 
+// enable CSRF
+// app.use(csrf());
+const csrfInstance = csrf();
+app.use((req, res, next) => {
+    if (req.url.slice(0,5)=="/api/") {
+        return next();
+    }
+    csrfInstance(req, res, next);
+})
+
+app.use((err, req, res, next) => {
+    console.log("checking for csrf err >>", err);
+    if (err && err.code == "EBADCSRFTOKEN") {
+        req.flash('error_messages', 'The form has expired. Please try again');
+        res.redirect('back');
+    } else {
+        next();
+    }
+})
+
+// Share CSRF with hbsz files
+app.use((req, res, next) => {
+    if (req.csrfToken) {
+        res.locals.csrfToken = req.csrfToken();
+    }
+    next();
+})
+
 async function main() {
     // Main landing page and other static contents
     app.use('/', landingRoutes);
+    app.use('/products', checkIfAuthenticated, productRoutes);
     app.use('/brands', checkIfAuthenticated, brandRoutes);
     app.use('/categories', checkIfAuthenticatedAdmin, categoriesRoutes);
-    app.use('/tags', checkIfAuthenticated, tagsRoutes);
+    app.use('/tags', tagsRoutes);
     app.use('/users', usersRoutes);
-    app.use('/api/lists', api.lists);
+    app.use('/api/lists', express.json(), api.lists);
 }
 
 main();

@@ -11,6 +11,7 @@ Categories
 </header>
 
 <form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
     {{{form}}}
     <input type="submit" value="Add" class="btn btn-primary my-3"/>
     <a href="/categories" class="btn btn-dark">Cancel</a>

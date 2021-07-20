@@ -11,6 +11,7 @@ Brands
 </header>
 
 <form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
     <div class="alert alert-danger">
         <p>Are you sure you want to delete {{brand.name}}?</p> 
         <input type="submit" value="Yes" class="btn btn-danger"/>

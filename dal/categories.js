@@ -13,9 +13,9 @@ const getCategoryById = async (categoryId) => {
 
 // useful for rendering lists
 const getAllCategories = async () => {
-    return await Category.fetchAll().map( category => 
-        [ category.get('id'), category.get('name') ]
-    );
+    return await Category.fetchAll().map( category => {
+        return ({ id: category.get('id'), name: category.get('name')  })
+    });
 }
 
 module.exports = {

@@ -11,6 +11,7 @@ Brands
 </header>
 
 <form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
     {{{form}}}
     <input type="submit" value="Save Changes" class="btn btn-primary"/>
     <a href="/brands" class="btn btn-dark">Cancel</a>
