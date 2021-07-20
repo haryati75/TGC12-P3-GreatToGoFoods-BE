@@ -8,10 +8,10 @@ insert into categories (name) values ("Meal"), ("Juice"), ("Sides"), ("Snacks");
 insert into tags (name) values ("Vegan-friendly"), ("Sugar-free"), ("Gluten-free");
 
 INSERT INTO products
-    (SKU,name,category_id,description,ingredients,unit_base_price,unit_cost,unit_of_measure,kcal,protein_gm,carbs_gm,fats_gm,quantity_in_stock,quantity_to_fulfill,date_created) 
-    VALUES('123456789','Aglia Olio',1,'A favourite of the Italians','spaghetti, vegetables, garlics, olive oil',500,300,'1 box',250,10,100,20,10,0,'2021-07-01 00:00:00')
+    (SKU,name,category_id,brand_id,description,ingredients,unit_base_price,unit_cost,unit_of_measure,kcal,protein_gm,carbs_gm,fats_gm,quantity_in_stock,quantity_to_fulfill,date_created) 
+    VALUES('123456789','Aglia Olio',1,1,'A favourite of the Italians','spaghetti, vegetables, garlics, olive oil',500,300,'1 box',250,10,100,20,10,0,'2021-07-01 00:00:00')
 
 INSERT INTO products
-    (SKU,name,category_id,description,ingredients,unit_base_price,unit_cost,unit_of_measure,kcal,fibre_gm,sugars_gm,fats_gm,juice_serving_size_ml,quantity_in_stock,quantity_to_fulfill,date_created) 
-    VALUES('999999999','ABC Juice',2,'Apple-beetroot-carrot juice. Not Air Batu Campur.','green and red apples, beetroot, carrot',300,150,'1 litter bottle',200,150,100,0,250,15,0,'2021-07-01 00:00:00')
+    (SKU,name,category_id,brand_id,description,ingredients,unit_base_price,unit_cost,unit_of_measure,kcal,fibre_gm,sugars_gm,fats_gm,juice_serving_size_ml,quantity_in_stock,quantity_to_fulfill,date_created) 
+    VALUES('999999999','ABC Juice',2,3,'Apple-beetroot-carrot juice. Not Air Batu Campur.','green and red apples, beetroot, carrot',300,150,'1 litter bottle',200,150,100,0,250,15,0,'2021-07-01 00:00:00')
     

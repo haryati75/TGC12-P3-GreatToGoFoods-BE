@@ -4,11 +4,17 @@ const Product = bookshelf.model('Product', {
     tableName: 'products',
     category() {
         return this.belongsTo('Category')
+    },
+    brand() {
+        return this.belongsTo('Brand')
     }
 })
 
 const Brand = bookshelf.model('Brand', {
-    tableName: 'brands'
+    tableName: 'brands',
+    products() {
+        return this.hasMany('Product')
+    }
 })
 
 const Category = bookshelf.model('Category', {

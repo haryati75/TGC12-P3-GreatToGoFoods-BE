@@ -5,6 +5,7 @@ const router = express.Router();
 const { Product } = require('../models');
 const { getProductById } = require('../dal/products');
 const { getAllCategories } = require('../dal/categories');
+const { getAllBrands } = require('../dal/brands')
 
 // import the Forms
 const { bootstrapField } = require('../forms');
@@ -16,7 +17,7 @@ const { createProductForm } = require('../forms/products')
 router.get('/', async (req, res)=> {
     // fetch all the Products
     let products = await Product.collection().fetch({
-        withRelated: ['category']
+        withRelated: ['category', 'brand']
     });
 
     // convert collection to JSON and render via hbs
@@ -29,10 +30,11 @@ router.get('/', async (req, res)=> {
 // -------------------------
 
 router.get('/create', async (req, res) => {
-    // dal for categories
+    // lists to render in the forms
     const allCategories = await getAllCategories();
+    const allBrands = await getAllBrands();
+    const productForm = createProductForm(allCategories, allBrands);
 
-    const productForm = createProductForm(allCategories);
     res.render('products/create', {
         'form' : productForm.toHTML(bootstrapField)
     })
@@ -40,7 +42,9 @@ router.get('/create', async (req, res) => {
 
 router.post('/create', async (req, res) => {
     const allCategories = await getAllCategories();
-    const productForm = createProductForm(allCategories);
+    const allBrands = await getAllBrands();
+    const productForm = createProductForm(allCategories, allBrands);
+
     productForm.handle(req, {
         'success': async(form) => {
             // make sure the names of the form fields matches with database fields 
@@ -77,7 +81,8 @@ router.get('/:product_id/update', async (req, res) => {
     const product = await getProductById(productId);
 
     const allCategories = await getAllCategories();
-    const productForm = createProductForm(allCategories);
+    const allBrands = await getAllBrands();
+    const productForm = createProductForm(allCategories, allBrands);
     productForm.fields.name.value = product.get('name');
     productForm.fields.description.value = product.get('description');
     productForm.fields.image_url.value = product.get('image_url');
@@ -98,9 +103,11 @@ router.get('/:product_id/update', async (req, res) => {
     productForm.fields.country_source.value = product.get('country_source');
     productForm.fields.quantity_in_stock.value = product.get('quantity_in_stock');
     productForm.fields.quantity_to_fulfill.value = product.get('quantity_to_fulfill');
-    productForm.fields.category_id.value = product.get('category_id');
 
     // foreign keys
+    productForm.fields.category_id.value = product.get('category_id');
+    productForm.fields.brand_id.value = product.get('brand_id');
+
     // many-to-many tags
 
     res.render('products/update', {
@@ -114,15 +121,25 @@ router.post('/:product_id/update', async (req, res) => {
     const product = await getProductById(productId);
 
     const allCategories = await getAllCategories();
-    const productForm = createProductForm(allCategories);
+    const allBrands = await getAllBrands();
+    const productForm = createProductForm(allCategories, allBrands);
 
     productForm.handle(req, {
         'success': async (form) => {
             product.set(form.data);
             product.set('date_modified', new Date());
 
-            let response = await product.save();
-            req.flash("success_messages", `Changes to Product ${response.get('name')} has been saved successfully.`);
+            try {
+                let response = await product.save();
+                req.flash("success_messages", `Changes to Product ${response.get('name')} has been saved successfully.`);
+                res.redirect('/products');
+            } catch (e) {
+                console.log(e);
+                req.flash("error_messages", "Error saving record to the database. Check with administrator.");
+                res.redirect('/products');
+            }
+
+            req.flash("success_messages", ``);
             res.redirect('/products');
         },
         'error': async (form) => {

@@ -6,7 +6,8 @@ const getProductById = async (productId) => {
     const product = await Product.where({
         'id': productId
     }).fetch({
-        require: true
+        require: true,
+        withRelated: ['category', 'brand']
     });
     return product;
 }
