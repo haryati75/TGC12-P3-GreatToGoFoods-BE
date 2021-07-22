@@ -1,0 +1,48 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Users
+{{/block}}
+
+{{#block 'content'}}
+<header class="">
+    <h1>Users Administration</h1>
+    <p>Only System Administrator can register, verify or deactivate Business Users.</p>
+    <a href="/users/register" class="btn btn-success btn-sm">Create</a>
+</header>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Registered On</th>
+            <th>Last Login</th>
+            <th>Last Modified</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each users}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.name}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.role}}</td>
+                <td>{{this.created_on}}</td>
+                <td>{{this.last_login_on}}</td>
+                <td>{{this.modified_on}}</td>
+                <td>
+                    <a href="/users/{{this.id}}/verify" class="btn btn-primary btn-sm">Verify</a>
+                    <a href="/users/{{this.id}}/deactivate" class="btn btn-danger btn-sm">Deactivate</a>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{/block}}
+
+{{/extends}}

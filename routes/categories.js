@@ -1,9 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-// import in the checkAuth middleware
-const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
-
 // import the model and DAL
 const { Category } = require('../models');
 const { getCategoryById } = require('../dal/categories');
@@ -15,7 +12,7 @@ const { createCategoryForm } = require('../forms/categories')
 // Routes: Get All Records
 // -----------------------
 
-router.get('/', checkIfAuthenticatedAdmin, async (req, res)=> {
+router.get('/', async (req, res)=> {
     // fetch all the records
     let categories = await Category.collection().fetch();
 

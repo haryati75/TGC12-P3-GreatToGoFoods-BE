@@ -57,9 +57,10 @@ const { checkIfAuthenticated, checkIfAuthenticatedAdmin } = require('./middlewar
 const landingRoutes = require('./routes/landing');
 const productRoutes = require('./routes/products');
 const brandRoutes = require('./routes/brands');
-const categoriesRoutes = require('./routes/categories');
-const tagsRoutes = require('./routes/tags');
-const usersRoutes = require('./routes/users');
+const categoryRoutes = require('./routes/categories');
+const tagRoutes = require('./routes/tags');
+const userRoutes = require('./routes/users');
+const customerRoutes = require('./routes/customers');
 const cloudinaryRoutes = require('./routes/cloudinary');
 const api = {
     lists: require('./routes/api/lists'),
@@ -100,9 +101,10 @@ async function main() {
     app.use('/', landingRoutes);
     app.use('/products', checkIfAuthenticated, productRoutes);
     app.use('/brands', checkIfAuthenticated, brandRoutes);
-    app.use('/categories', checkIfAuthenticatedAdmin, categoriesRoutes);
-    app.use('/tags', tagsRoutes);
-    app.use('/users', usersRoutes);
+    app.use('/categories', checkIfAuthenticatedAdmin, categoryRoutes);
+    app.use('/tags', checkIfAuthenticated, tagRoutes);
+    app.use('/users', userRoutes);
+    app.use('/customers', checkIfAuthenticatedAdmin, customerRoutes)
     app.use('/cloudinary', cloudinaryRoutes);
     app.use('/api/lists', cors(), express.json(), api.lists);
     app.use('/api/products', cors(), express.json(), api.products);

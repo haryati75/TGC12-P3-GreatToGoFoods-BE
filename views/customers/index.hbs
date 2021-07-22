@@ -1,0 +1,47 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Customers
+{{/block}}
+
+{{#block 'content'}}
+<header class="">
+    <h1>Customers Administration</h1>
+    <p>Customers can also register or update their data in the e-Commerce front-end site.</p>
+    <a href="/customers/register" class="btn btn-success btn-sm">Create</a>
+</header>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Registered On</th>
+            <th>Last Login</th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each customers}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.user.name}}</td>
+                <td>{{this.contact_no}}</td>
+                <td>{{this.user.email}}</td>
+                <td>{{this.user.created_on}}</td>
+                <td>{{this.user.last_login_on}}</td>
+
+                <td>
+                    <a href="/customers/{{this.id}}/edit" class="btn btn-primary btn-sm">Edit</a>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{/block}}
+
+{{/extends}}

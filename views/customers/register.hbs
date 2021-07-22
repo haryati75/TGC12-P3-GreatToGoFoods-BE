@@ -1,0 +1,21 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Customers
+{{/block}}
+
+{{#block 'content'}}
+
+<header class="">
+    <h1>Register a Customer</h1>
+</header>
+
+<form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    {{{form}}}
+    <input type="submit" value="Register" class="btn btn-primary my-3"/>
+</form>
+
+{{/block}}
+
+{{/extends}}

@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
 
+// import in the checkAuth middleware
+const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
+
 const getHashedPassword = (password) => {
     const sha256 = crypto.createHash('sha256');
     const hash = sha256.update(password).digest('base64');
@@ -14,6 +17,18 @@ const { User } = require('../models');
 // import in the forms
 const { bootstrapField } = require('../forms');
 const { createUserRegistrationForm, createLoginForm } = require('../forms/users');
+
+router.get('/', checkIfAuthenticatedAdmin, async (req, res) => {
+    // fetch all the users
+    let users = await User.collection().fetch({
+        role: ["Business", "Not Verified"]
+    });
+
+    // convert collection to JSON and render via hbs
+    res.render('users/index', {
+        'users': users.toJSON()
+    })
+})
 
 router.get('/register', (req, res) => {
     // display registration form
@@ -111,6 +126,7 @@ router.post('/login', (req, res) => {
                         req.flash("success_messages", "Welcome back, " + user.get('name'));
                         res.redirect('/');
                     } else {
+                        console.log("E54-Login Role Error: ", user.get('role'));
                         req.flash("error_messages", "(E54) Sorry, you have provided the wrong credentials.");
                         res.redirect('/users/login');
                     }
