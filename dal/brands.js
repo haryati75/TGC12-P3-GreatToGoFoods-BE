@@ -20,7 +20,12 @@ const getAllBrands = async () => {
 
 const getAllBrandsJSON = async () => {
     return await Brand.fetchAll().map( brand => {
-        return ({ id: brand.get('id'), name: brand.get('name')  })
+        return ({ 
+            id: brand.get('id'), 
+            name: brand.get('name'), 
+            description: brand.get('description'), 
+            logo_image_url: brand.get('logo_image_url')  
+        })
     });
 }
 

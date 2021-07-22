@@ -4,11 +4,14 @@ const wax = require("wax-on");
 const session = require('express-session');
 const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
-const csrf = require('csurf')
+const cors = require('cors');
+const csrf = require('csurf');
 require("dotenv").config();
 
 // create an instance of express app
 let app = express();
+
+// app.use(cors());
 
 // setup sessions
 app.use(session({
@@ -58,11 +61,13 @@ const categoriesRoutes = require('./routes/categories');
 const tagsRoutes = require('./routes/tags');
 const usersRoutes = require('./routes/users');
 const api = {
-    lists: require('./routes/api/lists')
+    lists: require('./routes/api/lists'),
+    products: require('./routes/api/products')
 }
 
 // enable CSRF
 // app.use(csrf());
+
 const csrfInstance = csrf();
 app.use((req, res, next) => {
     if (req.url.slice(0,5)=="/api/") {
@@ -97,7 +102,8 @@ async function main() {
     app.use('/categories', checkIfAuthenticatedAdmin, categoriesRoutes);
     app.use('/tags', tagsRoutes);
     app.use('/users', usersRoutes);
-    app.use('/api/lists', express.json(), api.lists);
+    app.use('/api/lists', cors(), express.json(), api.lists);
+    app.use('/api/products', cors(), express.json(), api.products);
 }
 
 main();

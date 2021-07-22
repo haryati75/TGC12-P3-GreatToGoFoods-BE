@@ -19,6 +19,14 @@ const getAllProductNames = async () => {
     });
 }
 
+const getAllProducts = async () => {
+    return await Product.fetchAll({
+        require: true,
+        withRelated: ['category', 'brand', 'tags']
+    })
+}
+
+
 module.exports = {
-    getProductById, getAllProductNames
+    getProductById, getAllProductNames, getAllProducts
 }
