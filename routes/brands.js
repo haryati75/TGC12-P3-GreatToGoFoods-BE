@@ -28,7 +28,10 @@ router.get('/', async (req, res)=> {
 router.get('/create', async (req, res) => {
     const brandForm = createBrandForm();
     res.render('brands/create', {
-        'form' : brandForm.toHTML(bootstrapField)
+        'form' : brandForm.toHTML(bootstrapField),
+        'cloudinaryName': process.env.CLOUDINARY_NAME,
+        'cloudinaryApiKey': process.env.CLOUDINARY_API_KEY,
+        'cloudinaryPreset': process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 
@@ -66,7 +69,10 @@ router.get('/:brand_id/update', async (req, res) => {
 
     res.render('brands/update', {
         'form': brandForm.toHTML(bootstrapField),
-        'brand': brand.toJSON()
+        'brand': brand.toJSON(),
+        'cloudinaryName': process.env.CLOUDINARY_NAME,
+        'cloudinaryApiKey': process.env.CLOUDINARY_API_KEY,
+        'cloudinaryPreset': process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 

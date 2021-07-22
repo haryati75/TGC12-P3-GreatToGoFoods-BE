@@ -60,6 +60,7 @@ const brandRoutes = require('./routes/brands');
 const categoriesRoutes = require('./routes/categories');
 const tagsRoutes = require('./routes/tags');
 const usersRoutes = require('./routes/users');
+const cloudinaryRoutes = require('./routes/cloudinary');
 const api = {
     lists: require('./routes/api/lists'),
     products: require('./routes/api/products')
@@ -102,6 +103,7 @@ async function main() {
     app.use('/categories', checkIfAuthenticatedAdmin, categoriesRoutes);
     app.use('/tags', tagsRoutes);
     app.use('/users', usersRoutes);
+    app.use('/cloudinary', cloudinaryRoutes);
     app.use('/api/lists', cors(), express.json(), api.lists);
     app.use('/api/products', cors(), express.json(), api.products);
 }

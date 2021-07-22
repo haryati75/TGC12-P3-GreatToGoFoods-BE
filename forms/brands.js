@@ -23,13 +23,7 @@ const createBrandForm = () => {
             }
         }),
         'logo_image_url': fields.string({
-            required: true,
-            errorAfterField: true,
-            cssClasses: {
-                label: ['form-label']
-            },
-            validators: [validators.url()]
-            // 'widget': widgets.hidden()
+            'widget': widgets.hidden()
         })
     })
 }
