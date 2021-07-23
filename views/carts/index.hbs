@@ -8,7 +8,7 @@ Shopping Cart
 <header class="">
     <h1>Shopping Cart for: {{user.name}}</h1>
     <p>Adding cart for a Customer user</p>
-    <a href="/carts/clearAll" class="btn btn-danger">Clear Cart</a>
+    <a href="/shopping-cart/clear" class="btn btn-danger">Clear Cart</a>
 </header>
 
 <table class="table">
@@ -28,17 +28,39 @@ Shopping Cart
             <tr>
                 <td>
                     {{#if this.product.image_url}}
-                        <img src="{{this.product.image_url}}" class="img-fluid img-thumbnail" style="max-height:'100px'"/>
+                        <img src="{{this.product.image_url}}" class="img-fluid img-thumbnail" style="max-height:120px; max-width:150px"/>
                     {{/if}}
                 </td>                
                 <td>{{this.product.name}}</td>
                 <td>{{this.product.category.name}}</td>
                 <td>{{this.unit_sales_price}}</td>
-                <td>{{this.quantity}}</td>
+                <td>
+                    <form method="POST" action="/shopping-cart/{{this.product_id}}/quantity/update">
+                        <input type="hidden" name="_csrf" value="{{../csrfToken}}"/>
+                        <div class="d-inline-flex">
+                            <input type="text" value="{{this.quantity}}" name="quantity" style="width:50px;">
+                            <input type="submit" value="Update Qty" class="btn btn-primary btn-sm"/>
+                        </div>
+                    </form>
+                </td>
                 <td>{{this.amount}}</td>
+                <td>
+                    <a href="/shopping-cart/{{this.product_id}}/remove" class="btn btn-danger btn-sm">Remove</a>
+                </td>
             </tr>
         {{/each}}
     </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><h5>Total Amount:</h5></td>
+            <td><h5>{{totalAmount}}</h5></td>
+            <td><a href="/shopping-cart/checkout" class="btn btn-success">Check Out</a></td>
+        </tr>
+    </tfoot>
 </table>
 
 {{/block}}

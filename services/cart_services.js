@@ -1,5 +1,8 @@
+// Data Access Layer
 const { getCartItems, getCartItemByUserAndProduct, addCartItem } = require('../dal/cart_items');
 const { getProductById } = require('../dal/products');
+
+const { CartItem } = require('../models')
 
 class CartServices {
     constructor(user_id) {
@@ -9,6 +12,11 @@ class CartServices {
     async getCart() {
         let cartItems = await getCartItems(this.user_id);
         return cartItems;
+    }
+
+    getCartTotalAmount(cartItems) {
+        let totalAmount = cartItems.map( item => item.get('amount')).reduce((a,b)=> a + b, 0)
+        return totalAmount;
     }
 
     async addToCart(productId, quantity) {
@@ -38,6 +46,35 @@ class CartServices {
         return cartItem;
     }
 
+    async removeFromCart (productId) {
+        let cartItem = await getCartItemByUserAndProduct(this.user_id, productId);
+        if (cartItem) {
+            await cartItem.destroy();
+            return true;
+        }
+        return false;
+    }
+
+    async setQuantity (productId, newQuantity) {
+        // check if the item already exist
+        let cartItem = await getCartItemByUserAndProduct(this.user_id, productId);
+
+        if (cartItem) {
+            cartItem.set('quantity', newQuantity);
+            cartItem.set('amount', cartItem.get('unit_sales_price') * newQuantity);
+            cartItem.set('modified_on', new Date());
+            await cartItem.save();
+            return cartItem;
+        }
+        return null;
+    }
+
+    async clearCart () {
+        let cartItems = await CartItem.where({
+            'user_id': this.user_id,
+        }).destroy().then( console.log("Clear all items in cart for user >>", this.user_id) );   
+        return cartItems;
+    }
 }
 
 module.exports = CartServices;
