@@ -8,11 +8,9 @@ router.get('/', async(req, res)=> {
 })
 
 router.get('/:product_id', async(req, res) => {
-    console.log("route /products/id ")
     let productId = req.params.product_id;
     try {
         let product = await getProductById(productId)
-        console.log("route api /products with id:", productId)
         if (product) {
             res.status(200);
             res.send(product);
