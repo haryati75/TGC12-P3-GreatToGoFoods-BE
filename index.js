@@ -63,6 +63,7 @@ const userRoutes = require('./routes/users');
 const customerRoutes = require('./routes/customers');
 const cloudinaryRoutes = require('./routes/cloudinary');
 const shoppingCartRoutes = require('./routes/shoppingCart');
+const checkoutRoutes = require('./routes/checkout');
 const api = {
     lists: require('./routes/api/lists'),
     products: require('./routes/api/products')
@@ -73,7 +74,8 @@ const api = {
 
 const csrfInstance = csrf();
 app.use((req, res, next) => {
-    if (req.url.slice(0,5)=="/api/") {
+    // exclude CSRF for webhooks or api
+    if (req.url === '/checkout/process-payment'  || req.url.slice(0,5)=="/api/") {
         return next();
     }
     csrfInstance(req, res, next);
@@ -108,6 +110,9 @@ async function main() {
     app.use('/customers', checkIfAuthenticatedAdmin, customerRoutes)
     app.use('/cloudinary', cloudinaryRoutes);
     app.use('/shopping-cart', shoppingCartRoutes);
+    app.use('/checkout', checkoutRoutes);
+
+    // all routes that are part of API must specifiy to use express.json middleware
     app.use('/api/lists', cors(), express.json(), api.lists);
     app.use('/api/products', cors(), express.json(), api.products);
 }
