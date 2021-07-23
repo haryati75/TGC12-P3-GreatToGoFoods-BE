@@ -1,18 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const crypto = require('crypto');
 
 // import in the checkAuth middleware
 const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
 
-const getHashedPassword = (password) => {
-    const sha256 = crypto.createHash('sha256');
-    const hash = sha256.update(password).digest('base64');
-    return hash;
-}
-
-// import in the model
+// import in the model, dal and services
 const { User } = require('../models');
+const { getUserByEmail } = require('../dal/users');
+const { getHashedPassword }  = require('../services/user_services');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
@@ -44,11 +39,8 @@ router.post('/register', (req, res) => {
         'success': async (form) => {
 
             // check if similar user email exists
-            let user = await User.where({
-                'email': form.data.email
-            }).fetch({
-                require: false
-            })
+            let email = form.data.email;
+            let user = await getUserByEmail(email);
 
             if (user) {
                 req.flash("error_messages", "Registration failed. Your credential already exists.")
@@ -58,11 +50,10 @@ router.post('/register', (req, res) => {
                 user = new User({
                     'name': form.data.name,
                     'password': getHashedPassword(form.data.password),
-                    'email': form.data.email
+                    'email': email,
+                    'role': "Not Verified",
+                    'created_on': new Date()
                 })
-                // set the role to "Not Verified"
-                user.set('role',"Not Verified");
-                user.set('created_on', new Date());
                 await user.save();
                 req.flash("success_messages", "User registered successfully. Please wait for Admin to verify your account.")
                 res.redirect('/');
@@ -95,12 +86,9 @@ router.post('/login', (req, res) => {
     loginForm.handle(req, {
         'success': async (form) => {
             // process login here
+            let email = form.data.email;
+            let user = await getUserByEmail(email);
 
-            let user = await User.where({
-                'email': form.data.email
-            }).fetch({
-                require: false
-            })
             if (!user) {
                 req.flash("error_messages", "(E19) Sorry, you have provided the wrong credentials.");
                 res.redirect('/users/login');

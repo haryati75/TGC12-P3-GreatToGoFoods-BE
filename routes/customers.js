@@ -1,15 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const crypto = require('crypto');
 
-const getHashedPassword = (password) => {
-    const sha256 = crypto.createHash('sha256');
-    const hash = sha256.update(password).digest('base64');
-    return hash;
-}
-
-// import in the model
+// import in the model and services
 const { Customer, User } = require('../models');
+const { getUserByEmail } = require('../dal/users');
+const { getHashedPassword }  = require('../services/user_services');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
@@ -43,11 +38,7 @@ router.post('/register', (req, res) => {
             let { email, password, confirm_password, ...customerData } = form.data;
 
             // check if similar customer's user email exists
-            let user = await User.where({
-                email
-            }).fetch({
-                require: false
-            })
+            let user = await getUserByEmail(email);
 
             if (user) {
                 req.flash("error_messages", "Customer Registration failed. Credential already exists.")
@@ -83,10 +74,5 @@ router.post('/register', (req, res) => {
         }
     })
 })
-
-
-
-
-
 
 module.exports = router;

@@ -77,6 +77,7 @@ const createCustomerRegistrationForm = () => {
             }
         }),
         'birth_date': fields.date({
+            required: true,
             label: 'Date of Birth',
             errorAfterField: true,
             widget: widgets.date(),

@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const checkIfAuthenticated = (req, res, next) => {
     if (req.session.user && (req.session.user.role === "Business" || req.session.user.role === "Admin")) {
         next()
@@ -22,4 +24,23 @@ const checkIfAuthenticatedAdmin = (req, res, next) => {
     }
 }
 
-module.exports = { checkIfAuthenticated, checkIfAuthenticatedAdmin }
+const checkIfAuthenticatedJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+        //Bear <token>
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+            if (err) {
+                return res.sendStatus(403)
+            }
+            req.user = user;
+            next();
+        });
+    } else {
+        res.sendStatus(401);
+    }
+}
+
+module.exports = { checkIfAuthenticated, checkIfAuthenticatedAdmin, checkIfAuthenticatedJWT }

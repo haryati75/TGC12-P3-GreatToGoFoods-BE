@@ -11,7 +11,7 @@ require("dotenv").config();
 // create an instance of express app
 let app = express();
 
-// app.use(cors());
+app.use(cors());
 
 // setup sessions
 app.use(session({
@@ -66,7 +66,8 @@ const shoppingCartRoutes = require('./routes/shoppingCart');
 const checkoutRoutes = require('./routes/checkout');
 const api = {
     lists: require('./routes/api/lists'),
-    products: require('./routes/api/products')
+    products: require('./routes/api/products'),
+    users: require('./routes/api/users')
 }
 
 // enable CSRF
@@ -113,8 +114,9 @@ async function main() {
     app.use('/checkout', checkoutRoutes);
 
     // all routes that are part of API must specifiy to use express.json middleware
-    app.use('/api/lists', cors(), express.json(), api.lists);
-    app.use('/api/products', cors(), express.json(), api.products);
+    app.use('/api/lists', express.json(), api.lists);
+    app.use('/api/products', express.json(), api.products);
+    app.use('/api/users', express.json(), api.users)
 }
 
 main();
