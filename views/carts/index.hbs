@@ -1,0 +1,46 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Shopping Cart
+{{/block}}
+
+{{#block 'content'}}
+<header class="">
+    <h1>Shopping Cart for: {{user.name}}</h1>
+    <p>Adding cart for a Customer user</p>
+    <a href="/carts/clearAll" class="btn btn-danger">Clear Cart</a>
+</header>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Image</th>            
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Amount</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each cartItems}}
+            <tr>
+                <td>
+                    {{#if this.product.image_url}}
+                        <img src="{{this.product.image_url}}" class="img-fluid img-thumbnail" style="max-height:'100px'"/>
+                    {{/if}}
+                </td>                
+                <td>{{this.product.name}}</td>
+                <td>{{this.product.category.name}}</td>
+                <td>{{this.unit_sales_price}}</td>
+                <td>{{this.quantity}}</td>
+                <td>{{this.amount}}</td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{/block}}
+
+{{/extends}}

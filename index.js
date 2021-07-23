@@ -62,6 +62,7 @@ const tagRoutes = require('./routes/tags');
 const userRoutes = require('./routes/users');
 const customerRoutes = require('./routes/customers');
 const cloudinaryRoutes = require('./routes/cloudinary');
+const shoppingCartRoutes = require('./routes/shoppingCart');
 const api = {
     lists: require('./routes/api/lists'),
     products: require('./routes/api/products')
@@ -106,6 +107,7 @@ async function main() {
     app.use('/users', userRoutes);
     app.use('/customers', checkIfAuthenticatedAdmin, customerRoutes)
     app.use('/cloudinary', cloudinaryRoutes);
+    app.use('/shopping-cart', shoppingCartRoutes);
     app.use('/api/lists', cors(), express.json(), api.lists);
     app.use('/api/products', cors(), express.json(), api.products);
 }
