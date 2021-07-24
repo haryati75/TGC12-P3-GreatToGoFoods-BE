@@ -7,14 +7,14 @@ Users
 {{#block 'content'}}
 
 <header class="card-header">
-    <h1>Register a User</h1>
+    <h1>Change Password for: {{userName}}</h1>
 </header>
 <div class="card-body">
     <form method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
         {{{form}}}
-        <input type="submit" value="Register" class="btn btn-primary my-3"/>
-        <a href="/" class="btn btn-dark">Cancel</a>
+        <input type="submit" value="Save" class="btn btn-primary my-3"/>
+        <a href="/users/profile" class="btn btn-dark">Cancel</a>
     </form>
 </div>
 

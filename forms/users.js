@@ -60,4 +60,31 @@ const createLoginForm = () => {
     })
 }
 
-module.exports = { createUserRegistrationForm, createLoginForm }
+const createChangePasswordForm = () => {
+    return forms.create({
+        'old_password': fields.password({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'new_password': fields.password({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'confirm_password': fields.password({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            validators: [ validators.matchField('new_password') ]
+        })
+    })
+}
+
+module.exports = { createUserRegistrationForm, createLoginForm, createChangePasswordForm }

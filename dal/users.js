@@ -27,17 +27,22 @@ const setUserRole = async (userId, role) => {
         await user.save();
         return user;
     } catch (e) {
-        console.log("Error setUserRole: ", e)
+        console.log("Error set role: ", e)
         return null;
     }   
 }
 
 const setUserPassword = async (userId, password) => {
-    const user = await getUserById(userId);
-    user.set('password', password);
-    user.set('modified_on', new Date());
-    await user.save();
-    return user;
+    try {
+        const user = await getUserById(userId);
+        user.set('password', password);
+        user.set('modified_on', new Date());
+        await user.save();
+        return user;
+    } catch (e) {
+        console.log("Error set password: ", e)
+        return null;
+    }
 }
 
 module.exports = { getUserByEmail, getUserById, setUserRole, setUserPassword }

@@ -7,11 +7,11 @@ const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
 // import in the model, dal and services
 const { User } = require('../models');
 const { getUserByEmail } = require('../dal/users');
-const { getHashedPassword, verifyNewUser, deactivateUser }  = require('../services/user_services');
+const { verifyNewUser, deactivateUser, isPasswordMatch, changePassword, saveNewUser }  = require('../services/user_services');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
-const { createUserRegistrationForm, createLoginForm } = require('../forms/users');
+const { createUserRegistrationForm, createLoginForm, createChangePasswordForm } = require('../forms/users');
 
 router.get('/', checkIfAuthenticatedAdmin, async (req, res) => {
     // fetch all the users
@@ -22,6 +22,60 @@ router.get('/', checkIfAuthenticatedAdmin, async (req, res) => {
     // convert collection to JSON and render via hbs
     res.render('users/index', {
         'users': users.toJSON()
+    })
+})
+
+router.get('/profile', (req, res) => {
+    const user = req.session.user;
+    if (!user) {
+        req.flash("error_messages", "You do not have permission to view this page");
+        res.redirect("/users/login");
+    } else {
+        res.render('users/profile', {
+            'user': user
+        })
+    }
+})
+
+router.get('/change-password', (req, res) => {
+    const user = req.session.user;
+    if (!user) {
+        req.flash("error_messages", "You do not have permission to view this page");
+        res.redirect("/users/login");
+    } else {
+        const changePasswordForm = createChangePasswordForm();
+        res.render('users/change-pwd', {
+            'userName': user.name,
+            'form': changePasswordForm.toHTML(bootstrapField)
+        })
+    }
+})
+
+router.post('/change-password', (req, res) => {
+    const sessionUser = req.session.user;
+
+    const changePasswordForm = createChangePasswordForm();
+    changePasswordForm.handle(req, {
+        'success': async (form) => {
+            let user = await changePassword(sessionUser.id, form.data.old_password, form.data.new_password);
+            if (user) {
+                req.flash("success_messages", "Password successfully changed.")
+                res.redirect('/');
+            } else {
+                req.flash("error_messages", "Wrong credentials provided. Please try again.");
+                res.redirect("/users/change-password");
+            }
+        },
+        'error': (form) => {
+            res.render('users/change-pwd', {
+                'form': form.toHTML(bootstrapField),
+                'userName': sessionUser.name
+            })
+        },
+        'empty': (form) => {
+            req.flash("error_messages","Please key in user details before saving.");
+            res.redirect('/users/change-password');
+        }
     })
 })
 
@@ -37,25 +91,15 @@ router.post('/register', (req, res) => {
     const registerUserForm = createUserRegistrationForm();
     registerUserForm.handle(req, {
         'success': async (form) => {
-
             // check if similar user email exists
-            let email = form.data.email;
-            let user = await getUserByEmail(email);
-
+            let user = await getUserByEmail(form.data.email);
             if (user) {
                 req.flash("error_messages", "Registration failed. Your credential already exists.")
                 res.redirect('/');
             } else {
                 // save new user
-                user = new User({
-                    'name': form.data.name,
-                    'password': getHashedPassword(form.data.password),
-                    'email': email,
-                    'role': "Not Verified",
-                    'created_on': new Date()
-                })
-                await user.save();
-                req.flash("success_messages", "User registered successfully. Please wait for Admin to verify your account.")
+                await saveNewUser(form.data.name, form.data.email, form.data.password);
+                req.flash("success_messages", "User registered successfully. Please wait for Admin to verify your account before you can login.")
                 res.redirect('/');
             }
         },
@@ -63,6 +107,10 @@ router.post('/register', (req, res) => {
             res.render('users/register', {
                 'form': form.toHTML(bootstrapField)
             })
+        },
+        'empty': (form) => {
+            req.flash("error_messages","Please key in user details before saving.");
+            res.redirect('/users/register');
         }
     })
 })
@@ -86,15 +134,16 @@ router.post('/login', (req, res) => {
     loginForm.handle(req, {
         'success': async (form) => {
             // process login here
+
             let email = form.data.email;
-            let user = await getUserByEmail(email);
+            let user = await getUserByEmail(email);     
 
             if (!user) {
-                req.flash("error_messages", "(E19) Sorry, you have provided the wrong credentials.");
+                req.flash("error_messages", "Sorry, you have provided the wrong credentials.");
                 res.redirect('/users/login');
             } else {
                 // check password matches
-                if (user.get('password') === getHashedPassword(form.data.password)) {
+                if (await isPasswordMatch(user.get('id'), form.data.password)) {
 
                     if (user.get('role') === "Business" || user.get('role') === "Admin") {
                         // add to the session that login succeed
@@ -114,13 +163,13 @@ router.post('/login', (req, res) => {
                         req.flash("success_messages", "Welcome back, " + user.get('name'));
                         res.redirect('/');
                     } else {
-                        console.log("E54-Login Role Error: ", user.get('role'));
-                        req.flash("error_messages", "(E54) Sorry, you have provided the wrong credentials.");
+                        console.log("Login Role Error: ", user.get('role'));
+                        req.flash("error_messages", "Sorry, you have provided the wrong credentials.");
                         res.redirect('/users/login');
                     }
 
                 } else {
-                    req.flash("error_messages", "(E75) Sorry, you have provided the wrong credentials.");
+                    req.flash("error_messages", "Sorry, you have provided the wrong credentials.");
                     res.redirect('/users/login');
                 }
             }
@@ -156,17 +205,6 @@ router.get('/:user_id/role/deactivate', async (req, res) => {
     }
 })
 
-router.get('/profile', (req, res) => {
-    const user = req.session.user;
-    if (!user) {
-        req.flash("error_messages", "You do not have permission to view this page");
-        res.redirect("/users/login");
-    } else {
-        res.render('users/profile', {
-            'user': user
-        })
-    }
-})
 
 router.get('/logout', (req, res) => {
     req.session.user = null;

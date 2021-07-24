@@ -108,7 +108,7 @@ async function main() {
     app.use('/categories', checkIfAuthenticatedAdmin, categoryRoutes);
     app.use('/tags', checkIfAuthenticated, tagRoutes);
     app.use('/users', userRoutes);
-    app.use('/customers', checkIfAuthenticatedAdmin, customerRoutes)
+    app.use('/customers', checkIfAuthenticated, customerRoutes)
     app.use('/cloudinary', cloudinaryRoutes);
     app.use('/shopping-cart', shoppingCartRoutes);
     app.use('/checkout', checkoutRoutes);
