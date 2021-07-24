@@ -19,14 +19,12 @@ const getCartItemByUserAndProduct = async (userId, productId) => {
     })
 }
 
-const addCartItem = async (userId, productId, quantity, unitSalesPrice) => {
+const addCartItem = async (userId, productId, quantity) => {
     let intQuantity = parseInt(quantity);
     let cartItem = new CartItem({
         'user_id': userId,
         'product_id': productId,
         'quantity': intQuantity,
-        'unit_sales_price': unitSalesPrice,
-        'amount': unitSalesPrice * intQuantity,
         'created_on': new Date()
     })
     await cartItem.save();

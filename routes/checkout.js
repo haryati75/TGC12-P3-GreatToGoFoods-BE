@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
         // Stripe guideline
         const lineItem = {
             'name' : item.related('product').get('name'),
-            'amount': item.get('unit_sales_price'),
+            'amount': item.related('product').get('unit_base_price'),
             'quantity': item.get('quantity'),
             'currency' : "SGD" 
         }
@@ -49,8 +49,8 @@ router.get('/', async (req, res) => {
         'customer_email': req.session.user.email,
         'payment_method_types': ['card'],
         'line_items': lineItems,
-        'success_url': process.env.STRIPE_SUCCESS_URL + '?sessionId={CHECKOUT_SESSION_ID}',
-        'cancel_url': process.env.STRIPE_ERROR_URL,
+        'success_url': process.env.BASE_URL + process.env.STRIPE_SUCCESS_URL + '?sessionId={CHECKOUT_SESSION_ID}',
+        'cancel_url': process.env.BASE_URL + process.env.STRIPE_ERROR_URL,
         'metadata': {
             'orders': metaData
         }

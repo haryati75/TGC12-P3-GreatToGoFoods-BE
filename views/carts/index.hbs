@@ -33,7 +33,7 @@ Shopping Cart
                 </td>                
                 <td>{{this.product.name}}</td>
                 <td>{{this.product.category.name}}</td>
-                <td>{{this.unit_sales_price}}</td>
+                <td>{{this.product.unit_base_price}}</td>
                 <td>
                     <form method="POST" action="/shopping-cart/{{this.product_id}}/quantity/update">
                         <input type="hidden" name="_csrf" value="{{../csrfToken}}"/>

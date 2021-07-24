@@ -21,14 +21,6 @@ exports.up = function(db) {
       'type': 'int',
       'notNull': true
     },
-    'unit_sales_price' : {
-      'type': 'int',
-      'notNull': true
-    },
-    'amount' : {
-      'type': 'int',
-      'notNull': true
-    },
     'created_on': {
       'type': 'datetime',
       'notNull': true
