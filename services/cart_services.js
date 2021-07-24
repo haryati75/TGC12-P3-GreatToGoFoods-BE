@@ -1,11 +1,38 @@
 // Data Access Layer
 const { getCartItems, getCartItemByUserAndProduct, addCartItem } = require('../dal/cart_items');
+const { getCustomerByUserId } = require('../dal/customers');
+const { getPendingOrderByCustomerId } = require('../dal/orders');
 
-const { CartItem } = require('../models')
+const { CartItem, Order, OrderItem } = require('../models')
 
 class CartServices {
     constructor(user_id) {
         this.user_id = user_id;
+    }
+
+    async createCartOrder() {
+        const customer = getCustomerByUserId(this.user_id);
+
+        // check if pending Order exists
+        let order = getPendingOrderByCustomerId(customer.get('id'));
+
+        // ensure order status and payment status are Pending 
+        if (!order) {
+            order = new Order({
+                'customer_id' : customer.get('id'),
+                'order_date' : new Date(),
+                'order_status' : "Pending",
+                'payment_status' : "Pending",
+                'created_on': new Date()
+            })
+        } else {
+            order.set('order_date', new Date());
+            order.set('order_status', "Pending");
+            order.set('payment_status', "Pending");
+            order.set('modified_on', new Date());
+        }
+        await order.save()
+        return order;
     }
 
     async getCart() {

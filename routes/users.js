@@ -145,7 +145,9 @@ router.post('/login', (req, res) => {
                 // check password matches
                 if (await isPasswordMatch(user.get('id'), form.data.password)) {
 
-                    if (user.get('role') === "Business" || user.get('role') === "Admin") {
+                    // if (user.get('role') === "Business" || user.get('role') === "Admin") {
+                    // HARYATI: TO REMOVE BELOW "Customer" check after Front-end Completed
+                    if (user.get('role') === "Business" || user.get('role') === "Admin" || user.get('role') === "Customer") {
                         // add to the session that login succeed
 
                         // store user details to the session

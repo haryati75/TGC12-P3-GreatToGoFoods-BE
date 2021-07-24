@@ -13,6 +13,9 @@ router.get('/', async (req, res) => {
     // get all the items from the cart
     let items = await cart.getCart();
 
+    // create an Order with a "Pending" status, with related Customer details
+    const cartOrder = await cart.createCartOrder();
+
     // step 1 - create line items
     let lineItems = [];
     let meta = [];
@@ -45,7 +48,7 @@ router.get('/', async (req, res) => {
     // - the URL to redirect to if payment fails
     let metaData = JSON.stringify(meta);
     const payment = {
-        'client_reference_id': req.session.user.id,
+        'client_reference_id': cartOrder.get('customer_id') + "-" + cartOrder.get('id'),
         'customer_email': req.session.user.email,
         'payment_method_types': ['card'],
         'line_items': lineItems,
@@ -96,7 +99,7 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
         
         // process stripeSession {Create Order Payment here}
 
-        // create Order record
+        // create Order Items record, save Payment details, update Order Status to "Processing"
         console.log("GTGF>> Start your order process here for", stripeSession.client_reference_id);
 
         // clear Cart
