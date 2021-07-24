@@ -10,4 +10,34 @@ const getUserByEmail = async (email) => {
     return user;
 }
 
-module.exports = { getUserByEmail }
+const getUserById = async (userId) => {
+    let user = await User.where({
+        id: userId
+    }).fetch({
+        require: false
+    })
+    return user;
+}
+
+const setUserRole = async (userId, role) => {
+    try {
+        const user = await getUserById(userId);
+        user.set('role', role);
+        user.set('modified_on', new Date());
+        await user.save();
+        return user;
+    } catch (e) {
+        console.log("Error setUserRole: ", e)
+        return null;
+    }   
+}
+
+const setUserPassword = async (userId, password) => {
+    const user = await getUserById(userId);
+    user.set('password', password);
+    user.set('modified_on', new Date());
+    await user.save();
+    return user;
+}
+
+module.exports = { getUserByEmail, getUserById, setUserRole, setUserPassword }

@@ -7,7 +7,7 @@ const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
 // import in the model, dal and services
 const { User } = require('../models');
 const { getUserByEmail } = require('../dal/users');
-const { getHashedPassword }  = require('../services/user_services');
+const { getHashedPassword, verifyNewUser, deactivateUser }  = require('../services/user_services');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
@@ -132,6 +132,28 @@ router.post('/login', (req, res) => {
             })
         }
     })
+})
+
+router.get('/:user_id/role/verify', async (req, res) => {
+    let user = await verifyNewUser(req.params.user_id);
+    if (user) {
+        req.flash("success_messages", "User verified for Business role access.");
+        res.redirect('/users');
+    } else {
+        req.flash("error_messages", "Unable to update User Role to Business.");
+        res.redirect('/users');
+    }
+})
+
+router.get('/:user_id/role/deactivate', async (req, res) => {
+    let user = await deactivateUser(req.params.user_id);
+    if (user) {
+        req.flash("success_messages", "User deactivated.");
+        res.redirect('/users');
+    } else {
+        req.flash("error_messages", "Unable to deactivate user.");
+        res.redirect('/users');
+    }
 })
 
 router.get('/profile', (req, res) => {

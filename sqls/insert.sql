@@ -1,3 +1,6 @@
+INSERT INTO users(name,email,password,role,created_on) VALUES('John Doe','john.doe@mail.com','OH+GSNLFB0hBoktgFjL9lyvNCUhOz0qmrkRrEkXR0Qk=','Admin', NOW());
+INSERT INTO users(name,email,password,role,created_on) VALUES('Ali Mat','ali.mat@mail.com','M2ZlsFHbrC5ZsykRwg9Rmh1Pp11lQHIH0uSk0J52InU=','Business', NOW());
+
 insert into brands (name, logo_image_url, description) values
     ("Gosh!", "https://www.proteinreport.org/sites/default/files/2020-01/Gosh%20logo.jpg", "We’re on a restless pursuit to bring the most lip smacking, tastebud tingling, plant-based flavour sensations to as many people on the planet as possible. We’ve got zero tolerance for nasties, fakeries, and BADditives, and as we’re made from the highest quality natural ingredients, and we’re free from the top 14 allergens, we’re made for the masses."),
     ("Beyond Meat", "https://images.squarespace-cdn.com/content/v1/5c3a4bd3b27e39b123503621/1581008108583-8BAZZVUK493924HZ0NKS/Beyong+Meat+Logo.jpg?format=1000w", "Our plant-based meats are made with intention. By combining expert innovation with simple, non GMO ingredients, we deliver the meaty experience you crave without the compromise. Our products offer greater or equal protein levels than their animal counterparts, no cholesterol, less saturated fat, and no antibiotics or hormones."),
@@ -14,4 +17,5 @@ INSERT INTO products
 INSERT INTO products
     (SKU,name,category_id,brand_id,description,ingredients,unit_base_price,unit_cost,unit_of_measure,kcal,fibre_gm,sugars_gm,fats_gm,juice_serving_size_ml,quantity_in_stock,quantity_to_fulfill,date_created) 
     VALUES('999999999','ABC Juice',2,3,'Apple-beetroot-carrot juice. Not Air Batu Campur.','green and red apples, beetroot, carrot',300,150,'1 litter bottle',200,150,100,0,250,15,0,'2021-07-01 00:00:00')
-    
+
+
