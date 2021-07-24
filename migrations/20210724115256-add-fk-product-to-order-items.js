@@ -15,20 +15,20 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return   db.addColumn('cart_items', 'user_id', {
+  return db.addColumn('order_items', 'product_id', {
     type: 'int',
       unsigned: true,
       notNull: true,
       foreignKey: {
-        name: 'cart_items_user_fk',
-        table: 'users',
+        name: 'order_items_product_fk',
+        table: 'products',
         mapping: 'id',
         rules: {
           onDelete: 'CASCADE',
-          onUpdate: 'CASCADE'
+          onUpdate: 'RESTRICT'
         }
       }
-  });
+  })
 };
 
 exports.down = function(db) {

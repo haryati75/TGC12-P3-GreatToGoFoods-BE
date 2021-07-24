@@ -15,12 +15,12 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return   db.addColumn('cart_items', 'user_id', {
+  return   db.addColumn('orders', 'customer_id', {
     type: 'int',
       unsigned: true,
       notNull: true,
       foreignKey: {
-        name: 'cart_items_user_fk',
+        name: 'orders_customer_fk',
         table: 'users',
         mapping: 'id',
         rules: {

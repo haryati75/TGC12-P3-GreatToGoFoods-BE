@@ -15,13 +15,13 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return   db.addColumn('cart_items', 'user_id', {
+  return   db.addColumn('order_items', 'order_id', {
     type: 'int',
       unsigned: true,
       notNull: true,
       foreignKey: {
-        name: 'cart_items_user_fk',
-        table: 'users',
+        name: 'order_items_order_fk',
+        table: 'orders',
         mapping: 'id',
         rules: {
           onDelete: 'CASCADE',

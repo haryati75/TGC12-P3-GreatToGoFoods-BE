@@ -52,8 +52,22 @@ const CartItem = bookshelf.model('CartItem', {
     }
 })
 
+const Order = bookshelf.model('Order', {
+    tableName: 'orders',
+    customer() {
+        return this.belongsTo('Customer');
+    }
+})
+
+const OrderItem = bookshelf.model('OrderItem', {
+    tableName: 'order_items',
+    product() {
+        return this.belongsTo('Product');
+    }
+})
+
 const BlacklistedToken = bookshelf.model('BlacklistedToken', {
     tableName: 'blacklisted_tokens'
 })
 
-module.exports = { Product, Brand, Category, Tag, User, Customer, CartItem, BlacklistedToken };
+module.exports = { Product, Brand, Category, Tag, User, Customer, CartItem, Order, OrderItem, BlacklistedToken };
