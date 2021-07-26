@@ -3,7 +3,7 @@ const router = express.Router();
 
 // import the model and DAL
 const { Product } = require('../models');
-const { getProductById } = require('../dal/products');
+const { getProductById, getAllProducts } = require('../dal/products');
 const { getAllCategories } = require('../dal/categories');
 const { getAllBrands } = require('../dal/brands');
 const { getAllTags } = require('../dal/tags');
@@ -17,9 +17,7 @@ const { createProductForm } = require('../forms/products')
 
 router.get('/', async (req, res)=> {
     // fetch all the Products
-    let products = await Product.collection().fetch({
-        withRelated: ['category', 'brand', 'tags']
-    });
+    let products = await getAllProducts();
 
     // convert collection to JSON and render via hbs
     res.render('products/index', {

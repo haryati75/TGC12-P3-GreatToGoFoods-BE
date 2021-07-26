@@ -64,6 +64,7 @@ const customerRoutes = require('./routes/customers');
 const cloudinaryRoutes = require('./routes/cloudinary');
 const shoppingCartRoutes = require('./routes/shoppingCart');
 const checkoutRoutes = require('./routes/checkout');
+const orderRoutes = require('./routes/orders');
 const api = {
     lists: require('./routes/api/lists'),
     products: require('./routes/api/products'),
@@ -112,6 +113,7 @@ async function main() {
     app.use('/cloudinary', cloudinaryRoutes);
     app.use('/shopping-cart', shoppingCartRoutes);
     app.use('/checkout', checkoutRoutes);
+    app.use('/orders', orderRoutes);
 
     // all routes that are part of API must specifiy to use express.json middleware
     app.use('/api/lists', express.json(), api.lists);

@@ -15,7 +15,6 @@ class CartServices {
         console.log("customer id", customer.get('id'));
 
         const totalOrderAmount = this.getCartTotalAmount(cartItemsWithAmountJSON);
-        console.log("CreateCardOrder Total amount", totalOrderAmount);
 
         // check if pending Order exists
         let order = await getPendingOrderByCustomerId(customer.get('id'));
@@ -124,6 +123,8 @@ class CartServices {
     async confirmStripePaid (stripeSession) {
         // client reference holds OrderId 
         let order = await getOrderByOrderId(stripeSession.client_reference_id);
+        // update order status from 'Pending' to 'Paid
+        // update all payment-related fields in Order
         if (order) {
             order.set('order_status','Paid');
             order.set('payment_status', stripeSession.payment_status);
@@ -131,7 +132,6 @@ class CartServices {
             order.set('payment_mode', stripeSession.payment_method_types[0]);
             order.set('payment_amount_total', stripeSession.amount_total);
             order.set('payment_confirmed_on', new Date());
-            order.set('modified_on', new Date());
         }
         await order.save();
         return order;

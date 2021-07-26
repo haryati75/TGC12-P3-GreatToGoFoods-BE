@@ -1,6 +1,13 @@
 // Data Access Layer: Import Model
 const { Order, OrderItem } = require('../models');
 
+const getAllOrders = async () => {
+    return await Order.fetchAll({
+        require: true,
+        withRelated: ['customer']
+    })
+}
+
 const getOrderByOrderId = async (orderId) => {
     let order = await Order.where({
         id : orderId
@@ -32,4 +39,4 @@ const getOrderItemsByOrderId = async (orderId) => {
     return orderItems
 }
 
-module.exports = { getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId }
+module.exports = { getAllOrders, getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId }
