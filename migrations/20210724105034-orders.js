@@ -18,7 +18,7 @@ exports.up = function(db) {
   return db.createTable('orders', {
     'id': { 'type': 'int', 'unsigned': true, 'primaryKey': true, 'autoIncrement': true },
     'order_date' : {
-      'type': 'int',
+      'type': 'datetime',
       'notNull': true
     },
     'order_amount_total' : {
@@ -44,6 +44,9 @@ exports.up = function(db) {
     },
     'payment_amount_total' : {
       'type': 'int'
+    },
+    'payment_confirmed_on': {
+      'type': 'datetime'
     },
     'created_on': {
       'type': 'datetime',

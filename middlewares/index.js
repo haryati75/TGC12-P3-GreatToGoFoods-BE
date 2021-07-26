@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const checkIfAuthenticated = (req, res, next) => {
-    if (req.session.user && (req.session.user.role === "Business" || req.session.user.role === "Admin")) {
+    if (req.session.user && (req.session.user.role === "Business" || req.session.user.role === "Admin" || req.session.user.role === "Customer")) {
         next()
     } else {
         req.flash("error_messages", "You need to sign in to access this page.");

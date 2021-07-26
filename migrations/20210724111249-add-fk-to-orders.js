@@ -21,7 +21,7 @@ exports.up = function(db) {
       notNull: true,
       foreignKey: {
         name: 'orders_customer_fk',
-        table: 'users',
+        table: 'customers',
         mapping: 'id',
         rules: {
           onDelete: 'CASCADE',

@@ -63,6 +63,9 @@ const OrderItem = bookshelf.model('OrderItem', {
     tableName: 'order_items',
     product() {
         return this.belongsTo('Product');
+    },
+    order() {
+        return this.belongsTo('Order');
     }
 })
 

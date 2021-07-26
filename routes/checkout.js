@@ -11,33 +11,34 @@ router.get('/', async (req, res) => {
     const cart = new CartServices(req.session.user.id);
 
     // get all the items from the cart
-    let items = await cart.getCart();
+    const itemsJSON = await cart.getCartJSON();
 
     // create an Order with a "Pending" status, with related Customer details
-    const cartOrder = await cart.createCartOrder();
+    // will also create Order_Details from Cart_Items
+    const cartOrder = await cart.createCartOrder(itemsJSON);
 
     // step 1 - create line items
     let lineItems = [];
     let meta = [];
-    for (let item of items) {
+    for (let item of itemsJSON) {
         // the keys in the lineItem objects MUST FOLLOW 
         // Stripe guideline
         const lineItem = {
-            'name' : item.related('product').get('name'),
-            'amount': item.related('product').get('unit_base_price'),
-            'quantity': item.get('quantity'),
+            'name' : item.product.name,
+            'amount': item.product.unit_base_price,
+            'quantity': item.quantity,
             'currency' : "SGD" 
         }
 
         // check if the product has image
-        if (item.related('product').get('image_url')) {
-            lineItem['images'] = [item.related('product').get('image_url')]
+        if (item.product.image_url) {
+            lineItem['images'] = [item.product.image_url]
         }
 
         lineItems.push(lineItem);
         meta.push({
-            'product_id': item.get('product_id'),
-            'quantity': item.get('quantity')
+            'product_id': item.product_id,
+            'quantity': item.quantity
         })
     }
 
@@ -48,18 +49,19 @@ router.get('/', async (req, res) => {
     // - the URL to redirect to if payment fails
     let metaData = JSON.stringify(meta);
     const payment = {
-        'client_reference_id': cartOrder.get('customer_id') + "-" + cartOrder.get('id'),
+        'client_reference_id': cartOrder.get('id'), // client reference to hold OrderId
         'customer_email': req.session.user.email,
         'payment_method_types': ['card'],
         'line_items': lineItems,
         'success_url': process.env.BASE_URL + process.env.STRIPE_SUCCESS_URL + '?sessionId={CHECKOUT_SESSION_ID}',
         'cancel_url': process.env.BASE_URL + process.env.STRIPE_ERROR_URL,
         'metadata': {
+            'userId': req.session.user.id,
             'orders': metaData
         }
     }
 
-    // console.log("PAYMENT with metaData", payment);
+    console.log("PAYMENT with metaData", payment);
 
     // 3. register the session
     let stripeSession = await Stripe.checkout.sessions.create(payment);
@@ -97,13 +99,13 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
         let stripeSession = event.data.object;
         console.log("From Stripe", stripeSession);
         
-        // process stripeSession {Create Order Payment here}
+        console.log("GTGF>> Start your order process here");
+        let cart = new CartServices(parseInt(stripeSession.metadata.userId));
 
-        // create Order Items record, save Payment details, update Order Status to "Processing"
-        console.log("GTGF>> Start your order process here for", stripeSession.client_reference_id);
+        // 1. set Order Status to Paid, copy Stripe Payment details
+        await cart.confirmStripePaid(stripeSession);
 
-        // clear Cart
-        let cart = new CartServices(parseInt(stripeSession.client_reference_id));
+        // 2. clear Cart
         await cart.clearCart();
     }
     res.send({ received: true })
