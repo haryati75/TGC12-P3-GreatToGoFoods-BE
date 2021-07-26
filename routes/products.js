@@ -17,11 +17,15 @@ const { createProductForm } = require('../forms/products')
 
 router.get('/', async (req, res)=> {
     // fetch all the Products
-    let products = await getAllProducts();
+    let products = (await getAllProducts()).toJSON();
+
+    for (let eachProduct of products) {
+        eachProduct['unitPriceStr'] = (eachProduct.unit_base_price / 100).toFixed(2);
+    }
 
     // convert collection to JSON and render via hbs
     res.render('products/index', {
-        'products': products.toJSON()
+        'products': products
     })
 })
 

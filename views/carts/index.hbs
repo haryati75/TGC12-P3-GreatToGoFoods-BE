@@ -33,7 +33,7 @@ Shopping Cart
                 </td>                
                 <td>{{this.product.name}}</td>
                 <td>{{this.product.category.name}}</td>
-                <td>{{this.product.unit_base_price}}</td>
+                <td>$ {{this.unitPriceStr}}</td>
                 <td>
                     <form method="POST" action="/shopping-cart/{{this.product_id}}/quantity/update">
                         <input type="hidden" name="_csrf" value="{{../csrfToken}}"/>
@@ -43,7 +43,7 @@ Shopping Cart
                         </div>
                     </form>
                 </td>
-                <td>{{this.amount}}</td>
+                <td>$ {{this.amountStr}}</td>
                 <td>
                     <a href="/shopping-cart/{{this.product_id}}/remove" class="btn btn-danger btn-sm">Remove</a>
                 </td>
@@ -57,7 +57,7 @@ Shopping Cart
             <td></td>
             <td></td>
             <td><h5>Total Amount:</h5></td>
-            <td><h5>{{totalAmount}}</h5></td>
+            <td><h5>$ {{totalAmount}}</h5></td>
             <td><a href="/checkout" class="btn btn-success">Check Out</a></td>
         </tr>
     </tfoot>
