@@ -18,6 +18,7 @@ const generateAccessToken = (user, secret, expiresIn) => {
 }
 
 router.post('/login', async (req, res) => {
+    console.log("API called>> login")
     let email = req.body.email;
     let user = await getUserByEmail(email);
     if (user && user.get('password') == getHashedPassword(req.body.password)) {
@@ -25,17 +26,19 @@ router.post('/login', async (req, res) => {
         let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '15m');
         let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '1d');
         res.json({
-            accessToken, refreshToken
+            accessToken, refreshToken, 
+            userName : user.get('name')
         })
     } else {
-        res.status(401);
+        res.sendStatus(401);
         res.json({
-            'error': 'Wrong credentials provided.'
+            'message': 'Wrong credentials provided.'
         })
     }
 })
 
 router.get('/profile', checkIfAuthenticatedJWT, async (req, res) => {
+    console.log("API called>> profile")
     const user = req.user;
     res.send(user);
 })
