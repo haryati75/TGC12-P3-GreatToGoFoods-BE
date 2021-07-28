@@ -33,12 +33,15 @@ const checkIfAuthenticatedJWT = (req, res, next) => {
 
         jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
             if (err) {
+                console.log("checkIfAuthenticatedJWT err 403")
                 return res.sendStatus(403)
             }
             req.user = user;
+            console.log("checkIfAuthenticatedJWT success")
             next();
         });
     } else {
+        console.log("checkIfAuthenticatedJWT err 401")
         res.sendStatus(401);
     }
 }

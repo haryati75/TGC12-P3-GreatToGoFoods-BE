@@ -44,6 +44,7 @@ router.get('/profile', checkIfAuthenticatedJWT, async (req, res) => {
 })
 
 router.post('/refresh', async (req, res) => {
+    console.log("API called>> refresh")
     let refreshToken = req.body.refreshToken;
     if (!refreshToken) {
         res.status(401);
@@ -78,19 +79,23 @@ router.post('/refresh', async (req, res) => {
 })
 
 router.post('/logout', async (req, res) => {
+    console.log("API called>> logout")
     let refreshToken = req.body.refreshToken;
     if (!refreshToken) {
+        console.log("logout error 401")
         res.status(401);
     } else {
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
             if (err) {
+                console.log("logout error 403")
                 res.status(403);
             }
-
             const token = new BlacklistedToken();
             token.set('token', refreshToken);
             token.set('date_created', new Date()); 
             await token.save();
+            console.log("logout successful")
+            res.status(200)
             res.send({
                 'message': 'Logged out successfully.'
             })
