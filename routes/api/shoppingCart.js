@@ -4,7 +4,7 @@ const router = express.Router();
 const { checkIfAuthenticatedJWT } = require('../../middlewares');
 const CartServices = require('../services/cart_services');
 
-router.get('/', async (req, res) => {
+router.get('/', checkIfAuthenticatedJWT, async (req, res) => {
     let cart = new CartServices(req.session.user.id);
     let cartItems = await cart.getCartJSON();
 
@@ -20,7 +20,6 @@ router.get('/', async (req, res) => {
         totalAmount
     })
 })
-
 
 router.get('/:product_id/add', checkIfAuthenticatedJWT, async (req, res) => {
     console.log("API called>> addToCart")
