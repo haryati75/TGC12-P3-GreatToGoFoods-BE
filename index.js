@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 })
 
 // import in the checkAuth middleware
-const { checkIfAuthenticated, checkIfAuthenticatedAdmin } = require('./middlewares');
+const { checkIfAuthenticated, checkIfAuthenticatedAdmin, checkIfAuthenticatedJWT } = require('./middlewares');
 
 // import in routes
 const landingRoutes = require('./routes/landing');
@@ -68,7 +68,8 @@ const orderRoutes = require('./routes/orders');
 const api = {
     lists: require('./routes/api/lists'),
     products: require('./routes/api/products'),
-    users: require('./routes/api/users')
+    users: require('./routes/api/users'),
+    cart: require('./routes/api/shoppingCart')
 }
 
 // enable CSRF
@@ -119,6 +120,7 @@ async function main() {
     app.use('/api/lists', express.json(), api.lists);
     app.use('/api/products', express.json(), api.products);
     app.use('/api/users', express.json(), api.users)
+    app.use('/api/shopping-cart', checkIfAuthenticatedJWT, express.json(), api.cart)
 }
 
 main();
