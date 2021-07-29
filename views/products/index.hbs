@@ -21,6 +21,7 @@ Products
             <th>Description</th>
             <th>Unit Price</th>
             <th>Available Stock</th>
+            <th>Stocks under Processing</th>
             <th>Tags</th>
             <th>Image</th>
             <th></th>
@@ -36,6 +37,7 @@ Products
                 <td>{{this.description}}</td>
                 <td>$ {{this.unitPriceStr}}</td>
                 <td>{{this.quantity_in_stock}}</td>
+                <td>{{this.quantity_to_fulfill}}</td>
                 <td>
                     {{#each this.tags}}
                         <span class="badge bg-info">

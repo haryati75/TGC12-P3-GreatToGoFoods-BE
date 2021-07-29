@@ -30,13 +30,23 @@ const getPendingOrderByCustomerId = async (customerId) => {
 }
 
 const getOrderItemsByOrderId = async (orderId) => {
-    let orderItems = await OrderItem.where({
-        order_id : orderId
-    }).fetch({
-        require: false,
-        withRelated: ['order', 'product']
-    })
-    return orderItems
+    let orderItems = await OrderItem.collection()
+        .where({
+            order_id : orderId
+        }).fetch({
+            require: false,
+            withRelated: ['order', 'product']
+        })
+    return orderItems;
 }
 
-module.exports = { getAllOrders, getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId }
+const deleteOrderItems = async (orderId) => {
+    await OrderItem.where({
+        order_id : orderId
+    }).destroy({
+        require: false
+    }).then(console.log("Clear order_items", orderId)) ;
+    return null;
+}
+
+module.exports = { getAllOrders, getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems }

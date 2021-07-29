@@ -1,7 +1,8 @@
 // Data Access Layer
 const { getCartItems, getCartItemByUserAndProduct, addCartItem } = require('../dal/cart_items');
 const { getCustomerByUserId } = require('../dal/customers');
-const { getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId } = require('../dal/orders');
+const { getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems } = require('../dal/orders');
+const { getProductById } = require('../dal/products');
 
 const { CartItem, Order, OrderItem } = require('../models')
 
@@ -37,27 +38,26 @@ class CartServices {
             order.set('modified_on', new Date());
         }
         await order.save()
+        await this.createCartOrderDetails(order.get('id'), cartItemsWithAmountJSON);
+        return order;
+    }
 
+    async createCartOrderDetails (orderId, cartItems) {
         // destroy previous order_details if exists
-        // re-create order_details from cart_items
-        let orderItems = await getOrderItemsByOrderId(order.get('id'));
+        await deleteOrderItems(orderId);
 
-        if (orderItems) {
-            // delete all
-            orderItems.destroy().then(console.log("Clear previous order_items")) 
-        }
-        // copy cart_items into order_items
-        for (const item of cartItemsWithAmountJSON) {
+       // re-create order_details from cart_items
+        for (const item of cartItems) {
             let newOrderItem = new OrderItem({
                 'quantity': item.quantity,
                 'unit_sales_price': item.product.unit_base_price,
                 'created_on': new Date(),
                 'product_id': item.product_id,
-                'order_id': order.get('id')
+                'order_id': orderId
             })
             await newOrderItem.save();
-        }
-        return order;
+        }        
+        return true;
     }
 
     async getCart() {
@@ -122,7 +122,8 @@ class CartServices {
 
     async confirmStripePaid (stripeSession) {
         // client reference holds OrderId 
-        let order = await getOrderByOrderId(stripeSession.client_reference_id);
+        let orderId = stripeSession.client_reference_id;
+        let order = await getOrderByOrderId(orderId);
         // update order status from 'Pending' to 'Paid
         // update all payment-related fields in Order
         if (order) {
@@ -134,13 +135,37 @@ class CartServices {
             order.set('payment_confirmed_on', new Date());
         }
         await order.save();
+        this.updateStockFromOrderDetails(orderId)
         return order;
     }
 
+    async updateStockFromOrderDetails (orderId) {
+        let orderItems = await getOrderItemsByOrderId(orderId);
+
+        for (const item of orderItems.toJSON()) {
+            console.log("OrderItem stockUpdate", item.quantity, item.product.name, item.product.quantity_in_stock, item.product.quantity_to_fulfill)
+            let product = await getProductById(item.product_id)
+            if (product) {
+                product.set('quantity_in_stock', item.product.quantity_in_stock - item.quantity);
+                product.set('quantity_to_fulfill', item.product.quantity_to_fulfill + item.quantity)
+                await product.save()
+                console.log("Quantity updated in Product Stock")
+            } else {
+                console.log("Stock not updated")
+            }
+        }
+        // OrderItems with related Products stock updated
+        orderItems = await getOrderItemsByOrderId(orderId);
+        return orderItems;
+    }
+
     async clearCart () {
-        let cartItems = await CartItem.where({
-            'user_id': this.user_id,
-        }).destroy().then( console.log("Clear all items in cart for user >>", this.user_id) );   
+        let cartItems = await getCartItems(this.user_id);
+        if (cartItems.length > 0) {
+            cartItems = await CartItem.where({
+                user_id : this.user_id
+            }).destroy().then( console.log("Clear all items in cart for user >>", this.user_id) );   
+        }
         return cartItems;
     }
 }
