@@ -69,7 +69,8 @@ const api = {
     lists: require('./routes/api/lists'),
     products: require('./routes/api/products'),
     users: require('./routes/api/users'),
-    cart: require('./routes/api/shoppingCart')
+    cart: require('./routes/api/shoppingCart'),
+    checkout: require('./routes/api/checkout')
 }
 
 // enable CSRF
@@ -119,8 +120,9 @@ async function main() {
     // all routes that are part of API must specifiy to use express.json middleware
     app.use('/api/lists', express.json(), api.lists);
     app.use('/api/products', express.json(), api.products);
-    app.use('/api/users', express.json(), api.users)
-    app.use('/api/shopping-cart', checkIfAuthenticatedJWT, express.json(), api.cart)
+    app.use('/api/users', express.json(), api.users);
+    app.use('/api/shopping-cart', checkIfAuthenticatedJWT, express.json(), api.cart);
+    app.use('/api/checkout', express.json(), api.checkout)
 }
 
 main();
