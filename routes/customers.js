@@ -47,16 +47,19 @@ router.post('/register', (req, res) => {
 
                 // save new user for customer
                 // before customer table due to foreign key
-                user = new User({
-                    'name': form.data.first_name + " " + form.data.last_name,
-                    'password': getHashedPassword(password),
-                    'email': email
-                });
+                const userName = form.data.first_name + " " + form.data.last_name;
 
-                // set the role to "Customer" - cannot login to Backend
-                user.set('role',"Customer");
-                user.set('created_on', new Date());
-                let addedUser = await user.save();
+                let addedUser = await saveNewUser(userName, email, password, "Customer");
+                // user = new User({
+                //     'name': form.data.first_name + " " + form.data.last_name,
+                //     'password': getHashedPassword(password),
+                //     'email': email
+                // });
+
+                // // set the role to "Customer" - cannot login to Backend
+                // user.set('role',"Customer");
+                // user.set('created_on', new Date());
+                // let addedUser = await user.save();
 
                 // save customer record
                 let transformedCustomerData = {...customerData, user_id: addedUser.get('id')}

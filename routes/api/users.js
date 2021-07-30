@@ -23,7 +23,7 @@ router.post('/login', async (req, res) => {
     let user = await getUserByEmail(email);
     if (user && user.get('password') == getHashedPassword(req.body.password)) {
 
-        let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '15m');
+        let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1d');
         let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '1d');
         res.json({
             accessToken, refreshToken, 
@@ -71,7 +71,7 @@ router.post('/refresh', async (req, res) => {
         // reload the user information from db
         let userModel = await getUserByEmail(user.email);
 
-        let accessToken = generateAccessToken(userModel, process.env.TOKEN_SECRET, '15m');
+        let accessToken = generateAccessToken(userModel, process.env.TOKEN_SECRET, '1d');
         res.send({
             accessToken
         });

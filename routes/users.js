@@ -98,7 +98,7 @@ router.post('/register', (req, res) => {
                 res.redirect('/');
             } else {
                 // save new user
-                await saveNewUser(form.data.name, form.data.email, form.data.password);
+                await saveNewUser(form.data.name, form.data.email, form.data.password, "Not Verified");
                 req.flash("success_messages", "User registered successfully. Please wait for Admin to verify your account before you can login.")
                 res.redirect('/');
             }

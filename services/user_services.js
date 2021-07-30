@@ -19,13 +19,14 @@ const isPasswordMatch = async (userId, password) => {
     }
 }
 
-const saveNewUser = async (name, email, password) => {
+const saveNewUser = async (name, email, password, role) => {
     try {
         const user = new User({
             name,
             email,
             'password': getHashedPassword(password),
-            'role': "Not Verified",
+            // 'role': "Not Verified",
+            role,
             'created_on': new Date()
         })
         let savedUser = await user.save();
