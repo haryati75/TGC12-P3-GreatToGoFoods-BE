@@ -3,9 +3,9 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 
 const { getUserByEmail } = require('../../dal/users');
-const { getHashedPassword }  = require('../../services/user_services');
+const { getHashedPassword, saveNewUser }  = require('../../services/user_services');
 const { checkIfAuthenticatedJWT } = require('../../middlewares');
-const { BlacklistedToken } = require('../../models');
+const { Customer, BlacklistedToken } = require('../../models');
 
 const generateAccessToken = (user, secret, expiresIn) => {
     return jwt.sign({
@@ -102,5 +102,48 @@ router.post('/logout', async (req, res) => {
         })
     }
 })
+
+router.post('/register', async (req, res) => {
+
+    let user = req.body.user;
+    let newCustomer = req.body.customer;
+
+    try {
+        let duplicateUser = await getUserByEmail(user.email);
+        if (duplicateUser) {
+            res.status(302)
+            res.send("Credentials already exists. Please try to login.")
+        }
+        // save new user for customer
+        // before customer table due to foreign key
+        let addedUser = await saveNewUser(user.name, user.email, user.password, "Customer");
+
+        // save customer record with new user_id generated
+        let transformedCustomerData = {...newCustomer, user_id: addedUser.get('id')}
+        let customer = new Customer(transformedCustomerData)
+        await customer.save();
+
+        res.status(200);
+        res.send("Customer registered successfully.")
+
+    } catch (e) {
+        res.status(400)
+        console.log("Register customer failed: ", e)
+        res.send("Fail to register customer.")
+    }
+})
+
+router.post('/change-password', checkIfAuthenticatedJWT, async (req, res) => {
+    const user = req.user;
+    try {
+        await changePassword(user.id, req.body.oldPassword, req.body.newPassword);
+        res.status(200);
+        res.send("Password successfully changed.")
+    } catch (e) {
+        res.status(400);
+        res.send("Wrong credentials provided. Please try again.")
+    }
+})
+
 
 module.exports = router;

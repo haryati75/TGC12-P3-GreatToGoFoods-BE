@@ -4,8 +4,7 @@ const router = express.Router();
 // import in the checkAuth middleware
 const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
 
-// import in the model, dal and services
-const { User } = require('../models');
+// import in the dal and services
 const { getAllUsers, getUserByEmail } = require('../dal/users');
 const { verifyNewUser, deactivateUser, isPasswordMatch, changePassword, saveNewUser }  = require('../services/user_services');
 
