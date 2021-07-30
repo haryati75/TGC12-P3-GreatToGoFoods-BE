@@ -6,7 +6,7 @@ const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
 
 // import in the model, dal and services
 const { User } = require('../models');
-const { getUserByEmail } = require('../dal/users');
+const { getAllUsers, getUserByEmail } = require('../dal/users');
 const { verifyNewUser, deactivateUser, isPasswordMatch, changePassword, saveNewUser }  = require('../services/user_services');
 
 // import in the forms
@@ -15,9 +15,7 @@ const { createUserRegistrationForm, createLoginForm, createChangePasswordForm } 
 
 router.get('/', checkIfAuthenticatedAdmin, async (req, res) => {
     // fetch all the users
-    let users = await User.collection().fetch({
-        role: ["Business", "Not Verified"]
-    });
+    let users = await getAllUsers();
 
     // convert collection to JSON and render via hbs
     res.render('users/index', {
@@ -145,11 +143,9 @@ router.post('/login', (req, res) => {
                 // check password matches
                 if (await isPasswordMatch(user.get('id'), form.data.password)) {
 
-                    // if (user.get('role') === "Business" || user.get('role') === "Admin") {
-                    // HARYATI: TO REMOVE BELOW "Customer" check after Front-end Completed
-                    if (user.get('role') === "Business" || user.get('role') === "Admin" || user.get('role') === "Customer") {
-                        // add to the session that login succeed
+                    if (user.get('role') === "Business" || user.get('role') === "Admin") {
 
+                        // add to the session that login succeed
                         // store user details to the session
                         req.session.user = {
                             'id': user.get('id'),

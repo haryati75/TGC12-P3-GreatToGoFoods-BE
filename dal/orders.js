@@ -2,10 +2,11 @@
 const { Order, OrderItem } = require('../models');
 
 const getAllOrders = async () => {
-    return await Order.fetchAll({
-        require: true,
+    let orders = await Order.fetchAll({
+        require: false,
         withRelated: ['customer']
     })
+    return orders;
 }
 
 const getOrderByOrderId = async (orderId) => {

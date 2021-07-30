@@ -11,7 +11,6 @@ const getHashedPassword = (password) => {
 const isPasswordMatch = async (userId, password) => {
     const user = await getUserById(userId);
     if (user && user.get('password') === getHashedPassword(password)) {
-        console.log("Password Match!!")
         return true;
     } else {
         console.log("ERROR Password DO NOT Match!!")
@@ -25,7 +24,6 @@ const saveNewUser = async (name, email, password, role) => {
             name,
             email,
             'password': getHashedPassword(password),
-            // 'role': "Not Verified",
             role,
             'created_on': new Date()
         })
@@ -38,31 +36,40 @@ const saveNewUser = async (name, email, password, role) => {
 }
 
 const verifyNewUser = async (userId) => {
-    const user = await getUserById(userId);
-    if (!user) {
-        return null;
-    } else {
+    try {
+        const user = await getUserById(userId);
         if (user.get('role') != "Customer") {
             const verifiedUser = await setUserRole(userId, "Business");
             return verifiedUser;
-        } else {
-            return null;
         }
+        return user;
+    } catch (e) {
+        console.log("Error verifying user: ", e)
+        return null;
     }
 }
 
 const deactivateUser = async (userId) => {
-    const user = await setUserRole(userId, "Deactivated");
-    return user;
+    try {
+        const user = await setUserRole(userId, "Deactivated");
+        return user;
+    } catch (e) {
+        console.log("Error deactivating user: ", e)
+        return null;
+    }
 }
 
 const changePassword = async (userId, oldPassword, newPassword) => {
-    if (await isPasswordMatch(userId, oldPassword) === true) {
-        console.log("change password!!")
-        const user = await setUserPassword(userId, getHashedPassword(newPassword))
-        return user;
+    try {
+        if (await isPasswordMatch(userId, oldPassword) === true) {
+            console.log("change password!!")
+            const user = await setUserPassword(userId, getHashedPassword(newPassword))
+            return user;
+        }
+    } catch (e) {
+        console.log("Error changing password: ", e)
+        return null;
     }
-    return null;
 }
 
 module.exports = { getHashedPassword, saveNewUser, verifyNewUser, deactivateUser, isPasswordMatch, changePassword }

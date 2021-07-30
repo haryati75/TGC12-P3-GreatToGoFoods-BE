@@ -1,6 +1,15 @@
 // Data Access Layer: Import Model
 const { User } = require('../models');
 
+const getAllUsers = async () => {
+    let users = await User.where(
+        'role', '<>', 'Customer'
+    ).fetchAll({
+        require: false
+    })
+    return users;
+}
+
 const getUserByEmail = async (email) => {
     let user = await User.where({
         email
@@ -45,4 +54,4 @@ const setUserPassword = async (userId, password) => {
     }
 }
 
-module.exports = { getUserByEmail, getUserById, setUserRole, setUserPassword }
+module.exports = { getAllUsers, getUserByEmail, getUserById, setUserRole, setUserPassword }

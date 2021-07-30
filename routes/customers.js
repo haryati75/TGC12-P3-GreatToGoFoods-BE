@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 // import in the model and services
-const { Customer, User } = require('../models');
+const { Customer } = require('../models');
 const { getUserByEmail } = require('../dal/users');
-const { getHashedPassword }  = require('../services/user_services');
+const { saveNewUser }  = require('../services/user_services');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
@@ -44,22 +44,10 @@ router.post('/register', (req, res) => {
                 req.flash("error_messages", "Customer Registration failed. Credential already exists.")
                 res.redirect('/');
             } else {
-
                 // save new user for customer
                 // before customer table due to foreign key
                 const userName = form.data.first_name + " " + form.data.last_name;
-
                 let addedUser = await saveNewUser(userName, email, password, "Customer");
-                // user = new User({
-                //     'name': form.data.first_name + " " + form.data.last_name,
-                //     'password': getHashedPassword(password),
-                //     'email': email
-                // });
-
-                // // set the role to "Customer" - cannot login to Backend
-                // user.set('role',"Customer");
-                // user.set('created_on', new Date());
-                // let addedUser = await user.save();
 
                 // save customer record
                 let transformedCustomerData = {...customerData, user_id: addedUser.get('id')}
