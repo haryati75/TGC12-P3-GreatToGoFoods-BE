@@ -40,7 +40,7 @@ router.get('/:product_id/add', async (req, res) => {
     }
 })
 
-router.get('/:product_id/remove', async (req, res) => {
+router.delete('/:product_id/remove', async (req, res) => {
     console.log("API called>> removeFromCart", req.params.product_id)
     let cart = new CartServices(req.user.id);
     try {
@@ -55,7 +55,7 @@ router.get('/:product_id/remove', async (req, res) => {
     }
 })
 
-router.get('/clear', async (req, res) => {
+router.delete('/clear', async (req, res) => {
     console.log("API called>> clearCart")
     let cart = new CartServices(req.user.id);
     try {
@@ -70,7 +70,7 @@ router.get('/clear', async (req, res) => {
     }
 })
 
-router.get('/checkout', async (req, res) => {
+router.post('/checkout', async (req, res) => {
     console.log("API called >> checkout")
     res.redirect('/checkout')
 })

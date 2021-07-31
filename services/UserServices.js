@@ -19,7 +19,6 @@ class UserServices {
         if (user && user.get('password') === this.getHashedPassword(password)) {
             return true;
         } else {
-            console.log("ERROR Password DO NOT Match!!")
             return false;
         }
     }
@@ -70,10 +69,13 @@ class UserServices {
     
     changePassword = async (oldPassword, newPassword) => {
         try {
-            if (await isPasswordMatch(this.user_id, oldPassword) === true) {
-                console.log("change password!!")
+            if (await this.isPasswordMatch(oldPassword) === true) {
                 const user = await setUserPassword(this.user_id, this.getHashedPassword(newPassword))
+                console.log("Password changed.")
                 return user;
+            } else {
+                console.log("Password did not match!!")
+                return false;
             }
         } catch (e) {
             console.log("Error changing password: ", e)

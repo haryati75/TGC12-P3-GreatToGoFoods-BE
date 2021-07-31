@@ -21,26 +21,34 @@ const generateAccessToken = (user, secret, expiresIn) => {
 
 router.post('/login', async (req, res) => {
     console.log("API called>> login")
-    const email = req.body.email;
-    const user = await getUserByEmail(email);
-    const userServices = new UserServices(user.get('id'));
-    if (await userServices.isPasswordMatch(form.data.password)) {
-        let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1d');
-        let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '1d');
-
-        // save login datetime
-        user.set('last_login_on', new Date());
-        await user.save();
-
-        res.json({
-            accessToken, refreshToken, 
-            userName : user.get('name')
-        })
-    } else {
-        res.sendStatus(401);
-        res.json({
-            'message': 'Wrong credentials provided.'
-        })
+    try {
+        const email = req.body.email;
+        const user = await getUserByEmail(email);
+        const userServices = new UserServices(user.get('id'));
+        let result = await userServices.isPasswordMatch(req.body.password)
+        if (result === true) {
+            let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1d');
+            let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '1d');
+            // save login datetime
+            user.set('last_login_on', new Date());
+            await user.save();
+            console.log("login successful")
+            res.status(200);
+            res.json({
+                accessToken, refreshToken, 
+                userName : user.get('name')
+            })
+        } else {
+            console.log("login failed")
+            res.status(401);
+            res.json({
+                'message': 'Wrong credentials provided.'
+            })
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(400);
+        res.send("Login failed.")
     }
 })
 
@@ -112,6 +120,7 @@ router.post('/logout', async (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
+    console.log("API called>> register")
     let newUser = req.body.user;
     let newCustomer = req.body.customer;
 
@@ -132,19 +141,35 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.post('/change-password', checkIfAuthenticatedJWT, async (req, res) => {
-    const user = req.user;
+router.put('/change_password', checkIfAuthenticatedJWT, async (req, res) => {
+    const userId = req.user.id;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword; 
+    console.log("API called>> change password for user", userId)
+    if (!oldPassword || !newPassword) {
+        res.status(400)
+        res.send("Missing credentials")
+        return;
+    }
     try {
-        await changePassword(user.id, req.body.oldPassword, req.body.newPassword);
-        res.status(200);
-        res.send("Password successfully changed.")
+        const userServices = new UserServices(userId);
+        let user = await userServices.changePassword(oldPassword, newPassword);
+        if (user) {
+            res.status(200);
+            res.send("Password successfully changed.")  
+        } else {
+            res.status(403);
+            console.log("Wrong credentials.")
+            res.send("Wrong credentials provided. Please try again.")
+        }
+
     } catch (e) {
         res.status(400);
-        res.send("Wrong credentials provided. Please try again.")
+        res.send("Failed changing password. Please try again.")
     }
 })
 
-router.post('/customer/edit', checkIfAuthenticatedJWT, async (req, res) => {
+router.put('/customer/edit', checkIfAuthenticatedJWT, async (req, res) => {
     try {
         const userServices = new UserServices(req.user.id)
         await userServices.saveCustomerProfile(req.body.userData, req.body.customerData);

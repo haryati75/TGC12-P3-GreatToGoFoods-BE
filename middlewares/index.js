@@ -25,8 +25,8 @@ const checkIfAuthenticatedAdmin = (req, res, next) => {
 }
 
 const checkIfAuthenticatedJWT = (req, res, next) => {
+    console.log("authenticatedJWT...")
     const authHeader = req.headers.authorization;
-
     if (authHeader) {
         //Bear <token>
         const token = authHeader.split(' ')[1];
@@ -41,7 +41,7 @@ const checkIfAuthenticatedJWT = (req, res, next) => {
             next();
         });
     } else {
-        console.log("checkIfAuthenticatedJWT err 401")
+        console.log("checkIfAuthenticatedJWT err 401 missing header auth")
         res.sendStatus(401);
     }
 }

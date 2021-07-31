@@ -5,7 +5,6 @@ const CartServices = require('../../services/CartServices');
 const Stripe = require('stripe')(process.env.STRIPE_KEY_SECRET);
 const jwt = require('jsonwebtoken');
 
-
 const bodyParser = require('body-parser');
 
 router.get('/', async (req, res) => {
