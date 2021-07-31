@@ -1,4 +1,5 @@
 // Data Access Layer: Import Model
+// CRUD here
 const { User } = require('../models');
 
 const getAllUsers = async () => {
@@ -28,6 +29,23 @@ const getUserById = async (userId) => {
     return user;
 }
 
+const createNewUser = async (userData) => {
+    try {
+        const user = new User({
+            'name': userData.name,
+            'email': userData.email,
+            'password': userData.password,  // hashed password passed in userData
+            'role': userData.role,
+            'created_on': new Date()
+        })
+        await user.save();
+        return user;
+    } catch (e) {
+        console.log("Error saving new user: ", e);
+        return null;
+    }
+}
+
 const setUserRole = async (userId, role) => {
     try {
         const user = await getUserById(userId);
@@ -54,4 +72,20 @@ const setUserPassword = async (userId, password) => {
     }
 }
 
-module.exports = { getAllUsers, getUserByEmail, getUserById, setUserRole, setUserPassword }
+const saveUser = async (userData) => {
+    try {
+        const user = await getUserById(userData.id);
+        user.set('name', userData.name);
+        user.set('email', userData.email);
+        user.set('password', userData.password);
+        user.set('role', userData.role);
+        user.set('modified_on', new Date());
+        await user.save();
+        return user;
+    } catch (e) {
+        console.log("Error save user: ", e)
+        return null;
+    }
+}
+
+module.exports = { getAllUsers, getUserByEmail, getUserById, createNewUser, saveUser, setUserRole, setUserPassword }

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const CartServices = require('../../services/cart_services');
+const CartServices = require('../../services/CartServices');
 const Stripe = require('stripe')(process.env.STRIPE_KEY_SECRET);
 const jwt = require('jsonwebtoken');
 

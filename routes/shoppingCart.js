@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const CartServices = require('../services/cart_services');
+const CartServices = require('../services/CartServices');
 
 router.get('/', async (req, res) => {
     let cart = new CartServices(req.session.user.id);

@@ -6,7 +6,7 @@ const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
 
 // import in the dal and services
 const { getAllUsers, getUserByEmail } = require('../dal/users');
-const { verifyNewUser, deactivateUser, isPasswordMatch, changePassword, saveNewUser }  = require('../services/user_services');
+const UserServices  = require('../services/UserServices');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
@@ -54,7 +54,8 @@ router.post('/change-password', (req, res) => {
     const changePasswordForm = createChangePasswordForm();
     changePasswordForm.handle(req, {
         'success': async (form) => {
-            let user = await changePassword(sessionUser.id, form.data.old_password, form.data.new_password);
+            const userServices = new UserServices(sessionUser.id);
+            let user = await userServices.changePassword(form.data.old_password, form.data.new_password);
             if (user) {
                 req.flash("success_messages", "Password successfully changed.")
                 res.redirect('/');
@@ -89,16 +90,16 @@ router.post('/register', (req, res) => {
     registerUserForm.handle(req, {
         'success': async (form) => {
             // check if similar user email exists
-            let user = await getUserByEmail(form.data.email);
-            if (user) {
+            let duplicateUser = await getUserByEmail(form.data.email);
+            if (duplicateUser) {
                 req.flash("error_messages", "Registration failed. Your credential already exists.")
                 res.redirect('/');
-            } else {
-                // save new user
-                await saveNewUser(form.data.name, form.data.email, form.data.password, "Not Verified");
-                req.flash("success_messages", "User registered successfully. Please wait for Admin to verify your account before you can login.")
-                res.redirect('/');
             }
+            // save new user
+            const userServices = new UserServices(null);
+            await userServices.registerUser(form.data.name, form.data.email, form.data.password, "Not Verified");
+            req.flash("success_messages", "User registered successfully. Admin needs to verify your account before you can login.")
+            res.redirect('/');
         },
         'error': (form) => {
             res.render('users/register', {
@@ -140,7 +141,8 @@ router.post('/login', (req, res) => {
                 res.redirect('/users/login');
             } else {
                 // check password matches
-                if (await isPasswordMatch(user.get('id'), form.data.password)) {
+                const userServices = new UserServices(user.get('id'));
+                if (await userServices.isPasswordMatch(form.data.password)) {
 
                     if (user.get('role') === "Business" || user.get('role') === "Admin") {
 
@@ -181,7 +183,8 @@ router.post('/login', (req, res) => {
 })
 
 router.get('/:user_id/role/verify', async (req, res) => {
-    let user = await verifyNewUser(req.params.user_id);
+    const userServices = new UserServices(req.params.user_id);
+    let user = await userServices.verifyNewUser();
     if (user) {
         req.flash("success_messages", "User verified for Business role access.");
         res.redirect('/users');
@@ -192,7 +195,8 @@ router.get('/:user_id/role/verify', async (req, res) => {
 })
 
 router.get('/:user_id/role/deactivate', async (req, res) => {
-    let user = await deactivateUser(req.params.user_id);
+    const userServices = new UserServices(req.params.user_id);
+    let user = await userServices.deactivateUser();
     if (user) {
         req.flash("success_messages", "User deactivated.");
         res.redirect('/users');

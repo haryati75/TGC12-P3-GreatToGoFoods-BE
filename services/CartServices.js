@@ -13,8 +13,6 @@ class CartServices {
 
     async createCartOrder(cartItemsWithAmountJSON) {
         const customer = await getCustomerByUserId(this.user_id);
-        console.log("customer id", customer.get('id'));
-
         const totalOrderAmount = this.getCartTotalAmount(cartItemsWithAmountJSON);
 
         // check if pending Order exists

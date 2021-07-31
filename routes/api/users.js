@@ -2,10 +2,12 @@ const express = require('express')
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
+const { BlacklistedToken } = require('../../models');
 const { getUserByEmail } = require('../../dal/users');
-const { getHashedPassword, saveNewUser }  = require('../../services/user_services');
+const { getCustomerByUserId } = require('../../dal/customers');
+const UserServices  = require('../../services/UserServices');
 const { checkIfAuthenticatedJWT } = require('../../middlewares');
-const { Customer, BlacklistedToken } = require('../../models');
+
 
 const generateAccessToken = (user, secret, expiresIn) => {
     return jwt.sign({
@@ -19,12 +21,17 @@ const generateAccessToken = (user, secret, expiresIn) => {
 
 router.post('/login', async (req, res) => {
     console.log("API called>> login")
-    let email = req.body.email;
-    let user = await getUserByEmail(email);
-    if (user && user.get('password') == getHashedPassword(req.body.password)) {
-
+    const email = req.body.email;
+    const user = await getUserByEmail(email);
+    const userServices = new UserServices(user.get('id'));
+    if (await userServices.isPasswordMatch(form.data.password)) {
         let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1d');
         let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '1d');
+
+        // save login datetime
+        user.set('last_login_on', new Date());
+        await user.save();
+
         res.json({
             accessToken, refreshToken, 
             userName : user.get('name')
@@ -39,8 +46,11 @@ router.post('/login', async (req, res) => {
 
 router.get('/profile', checkIfAuthenticatedJWT, async (req, res) => {
     console.log("API called>> profile")
-    const user = req.user;
-    res.send(user);
+    const userId = req.user.id;
+    const customerProfile = await getCustomerByUserId(userId);
+    
+    if (!customerProfile) { res.status(403); }
+    res.send(customerProfile);
 })
 
 router.post('/refresh', async (req, res) => {
@@ -51,9 +61,7 @@ router.post('/refresh', async (req, res) => {
     }
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
-        if (err) {
-            return res.status(403);
-        }
+        if (err) { return res.status(403); }
 
         // check if the refresh token has been blacklisted
         let blacklistedToken = await BlacklistedToken.where({
@@ -104,32 +112,23 @@ router.post('/logout', async (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
-
-    let user = req.body.user;
+    let newUser = req.body.user;
     let newCustomer = req.body.customer;
 
     try {
         let duplicateUser = await getUserByEmail(user.email);
         if (duplicateUser) {
-            res.status(302)
-            res.send("Credentials already exists. Please try to login.")
+            res.status(302);
+            res.send("Credentials already exists. Please try to login.");
         }
-        // save new user for customer
-        // before customer table due to foreign key
-        let addedUser = await saveNewUser(user.name, user.email, user.password, "Customer");
-
-        // save customer record with new user_id generated
-        let transformedCustomerData = {...newCustomer, user_id: addedUser.get('id')}
-        let customer = new Customer(transformedCustomerData)
-        await customer.save();
-
+        const userServices = new UserServices(null);
+        await userServices.registerCustomerUser(newUser, newCustomer);
         res.status(200);
-        res.send("Customer registered successfully.")
-
+        res.send("Customer registered successfully.");
     } catch (e) {
-        res.status(400)
-        console.log("Register customer failed: ", e)
-        res.send("Fail to register customer.")
+        console.log("Register customer failed: ", e);
+        res.status(400);
+        res.send("Fail to register customer.");
     }
 })
 
@@ -145,5 +144,16 @@ router.post('/change-password', checkIfAuthenticatedJWT, async (req, res) => {
     }
 })
 
+router.post('/customer/edit', checkIfAuthenticatedJWT, async (req, res) => {
+    try {
+        const userServices = new UserServices(req.user.id)
+        await userServices.saveCustomerProfile(req.body.userData, req.body.customerData);
+        res.status(200);
+        res.send("Profile saved successfully.")
+    } catch (e) {
+        res.status(400);
+        res.send("Failed to save profile changes. Please try again.")
+    }
+})
 
 module.exports = router;

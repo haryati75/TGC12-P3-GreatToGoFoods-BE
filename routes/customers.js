@@ -4,7 +4,7 @@ const router = express.Router();
 // import in the model and services
 const { Customer } = require('../models');
 const { getUserByEmail } = require('../dal/users');
-const { saveNewUser }  = require('../services/user_services');
+const UserServices  = require('../services/UserServices');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
@@ -13,6 +13,7 @@ const { createCustomerRegistrationForm } = require('../forms/customers');
 router.get('/', async (req, res) => {
     // fetch all the customers
     let customers = await Customer.collection().fetch({
+        require: false,
         withRelated: [ 'user']
     });
 
@@ -35,27 +36,27 @@ router.post('/register', (req, res) => {
     registerCustomerForm.handle(req, {
         'success': async (form) => {
             // split the form from User and Customer data
-            let { email, password, confirm_password, ...customerData } = form.data;
+            const { email, password, confirm_password, ...customerData } = form.data;
 
-            // check if similar customer's user email exists
-            let user = await getUserByEmail(email);
-
-            if (user) {
-                req.flash("error_messages", "Customer Registration failed. Credential already exists.")
-                res.redirect('/');
-            } else {
-                // save new user for customer
-                // before customer table due to foreign key
-                const userName = form.data.first_name + " " + form.data.last_name;
-                let addedUser = await saveNewUser(userName, email, password, "Customer");
-
-                // save customer record
-                let transformedCustomerData = {...customerData, user_id: addedUser.get('id')}
-                let customer = new Customer(transformedCustomerData)
-                await customer.save();
-
+            try {
+                let duplicateUser = await getUserByEmail(email);
+                if (duplicateUser) {
+                    req.flash("error_messages", "Customer Registration failed. Credential already exists.")
+                    res.redirect('/');
+                }            
+                const newUser = { 
+                    'name': customerData.first_name + ' ' + customerData.last_name,
+                    email,
+                    password
+                }
+                const userServices = new UserServices(null);
+                await userServices.registerCustomerUser(newUser, newCustomer);
                 req.flash("success_messages", "Customer registered successfully.")
                 res.redirect('/');
+            } catch (e) {
+                console.log("register customer error", e);
+                req.flash("error_messages", "Failed to register customer.")
+                res.redirect('/customers');
             }
         },
         'error': (form) => {
