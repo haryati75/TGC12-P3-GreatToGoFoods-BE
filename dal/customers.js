@@ -25,7 +25,6 @@ const createNewCustomer = async (customerData, userId) => {
             'address_postal_code': customerData.address_postal_code,
             'gender': customerData.gender,
             'birth_date': customerData.birth_date,
-            'created_on': new Date(),
             'user_id': userId
         })
         await customer.save();

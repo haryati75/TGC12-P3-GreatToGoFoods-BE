@@ -125,13 +125,14 @@ router.post('/register', async (req, res) => {
     let newCustomer = req.body.customer;
 
     try {
-        let duplicateUser = await getUserByEmail(user.email);
+        let duplicateUser = await getUserByEmail(newUser.email);
         if (duplicateUser) {
             res.status(302);
             res.send("Credentials already exists. Please try to login.");
         }
         const userServices = new UserServices(null);
         await userServices.registerCustomerUser(newUser, newCustomer);
+        console.log("Customer registered successfully.")
         res.status(200);
         res.send("Customer registered successfully.");
     } catch (e) {

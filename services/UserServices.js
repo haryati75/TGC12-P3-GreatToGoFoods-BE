@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
 const { getUserById, createNewUser, setUserRole, setUserPassword } = require('../dal/users');
-const { getCustomerByUserId } = require('../dal/customers');
+const { getCustomerByUserId, createNewCustomer } = require('../dal/customers');
 
 class UserServices {
     constructor(user_id) {
@@ -9,9 +9,12 @@ class UserServices {
     }
 
     getHashedPassword = (password) => {
-        const sha256 = crypto.createHash('sha256');
-        const hash = sha256.update(password).digest('base64');
-        return hash;
+        if (password && password != '') {
+            const sha256 = crypto.createHash('sha256');
+            const hash = sha256.update(password).digest('base64');
+            return hash;
+        }
+        return null;
     }
     
     isPasswordMatch = async (password) => {
@@ -24,6 +27,10 @@ class UserServices {
     }
     
     registerUser = async (name, email, password, role) => {
+        if (!email && !password) {
+            console.log("Error register user: Missing credentials");
+            return null;
+        }
         try {
             const user = await createNewUser({
                 name,
