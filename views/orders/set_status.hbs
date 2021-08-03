@@ -1,0 +1,25 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Orders
+{{/block}}
+
+{{#block 'content'}}
+
+<header class="">
+    <h1>Update to {{newStatus}} Status</h1>
+    <h3>For Order/Date: {{order.id}} and Customer: {{order.customer.first_name}} {{order.customer.last_name}}</h3>
+</header>
+
+<form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <div class="alert alert-danger">
+        <p>Change Order Status from {{order.order_status}} to {{newStatus}} ?</p> 
+        <input type="submit" value="Yes" class="btn btn-danger"/>
+        <a href="/orders" class="btn btn-success">No</a>
+    </div>
+</form>
+
+{{/block}}
+
+{{/extends}}

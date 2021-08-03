@@ -30,6 +30,13 @@ const getPendingOrderByCustomerId = async (customerId) => {
     return order;
 }
 
+const setOrderStatus = async (orderId, newStatus) => {
+    let order = await getOrderByOrderId(orderId); 
+    order.set('order_status', newStatus);
+    await order.save();
+    return order;
+}
+
 const getOrderItemsByOrderId = async (orderId) => {
     let orderItems = await OrderItem.collection()
         .where({
@@ -50,4 +57,4 @@ const deleteOrderItems = async (orderId) => {
     return null;
 }
 
-module.exports = { getAllOrders, getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems }
+module.exports = { getAllOrders, getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId, setOrderStatus, deleteOrderItems }
