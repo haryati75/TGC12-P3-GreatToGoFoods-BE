@@ -40,7 +40,6 @@ router.post('/:order_id/set-status/:new_status', async (req, res) => {
     const orderId = req.params.order_id;
     const newStatus = req.params.new_status;
     const order = await setOrderStatus(orderId, newStatus);
-    console.log(order);
 
     req.flash("success_messages", `Updated Status for Order ${orderId}-${order.get('order_date').toLocaleDateString('en-GB')} to ${newStatus}.`);
     res.redirect('/orders');

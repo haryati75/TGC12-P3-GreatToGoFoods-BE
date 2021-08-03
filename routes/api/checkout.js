@@ -76,6 +76,9 @@ router.get('/', async (req, res) => {
 
     // 3. register the session
     let stripeSession = await Stripe.checkout.sessions.create(payment);
+
+    console.log("created session id: ", stripeSession.id);
+
     res.render('checkout/index', {
         'sessionId': stripeSession.id,
         'publishableKey': process.env.STRIPE_KEY_PUBLISHABLE
@@ -83,6 +86,7 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/process-payment', bodyParser.raw({type: 'application/json'}), async (req, res) => {
+    console.log("Webhook Stripe API: reached Express process-payment.")
     let payload = req.body;
     let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
     let sigHeader = req.headers["stripe-signature"];
@@ -90,7 +94,7 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
     try {
         event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
     } catch (e) {        
-        console.log(e.message)
+        console.log("Webhook Stripe API error: ", e.message)
         res.send({
             'error': e.message
         })
@@ -110,6 +114,10 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
         await cart.clearCart();
     }
     res.send({ received: true })
+})
+
+router.post('/show-receipt', async (req, res) => {
+    
 })
 
 module.exports = router;

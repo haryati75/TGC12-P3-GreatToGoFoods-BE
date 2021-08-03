@@ -1,7 +1,7 @@
 // Data Access Layer
 const { getCartItems, getCartItemByUserAndProduct, addCartItem } = require('../dal/cart_items');
 const { getCustomerByUserId } = require('../dal/customers');
-const { getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems } = require('../dal/orders');
+const { getOrderByOrderId, getOrderByCustomerId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems } = require('../dal/orders');
 const { getProductById } = require('../dal/products');
 
 const { CartItem, Order, OrderItem } = require('../models')
@@ -165,6 +165,19 @@ class CartServices {
             }).destroy().then( console.log("Clear all items in cart for user >>", this.user_id) );   
         }
         return cartItems;
+    }
+
+    async getCustomerOrder(orderId) {
+        let order = await getOrderByCustomerId(orderId).toJSON();
+
+        order['orderDateStr'] = order.order_date.toLocaleDateString('en-GB')
+        order['orderTotalAmountStr'] = (order.order_amount_total / 100).toFixed(2)
+
+        for (let eachItem of order.orderItems) {
+            eachItem['unitSalesPriceStr'] = (eachItem.unit_sales_price / 100).toFixed(2);
+            eachItem['amountStr'] = ((eachItem.unit_sales_price * eachItem.quantity) / 100).toFixed(2);
+        }
+        return order;
     }
 }
 

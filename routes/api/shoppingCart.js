@@ -24,6 +24,22 @@ router.get('/', async (req, res) => {
     })
 })
 
+router.get('/order/:order_id', async (req, res) => {
+    console.log("API called>> get paid Order", req.params.order_id)
+    let cart = new CartServices(req.user.id);
+    try {
+        let order = await cart.getCustomerOrder(req.params.order_id);
+        res.json({
+            order
+        })
+    } catch (e) {
+        res.status(403);
+        res.json({
+            'message': "Unable to retrieve order details."
+        })
+    }
+})
+
 router.get('/:product_id/add', async (req, res) => {
     console.log("API called>> addToCart", req.params.product_id)
     let cart = new CartServices(req.user.id);

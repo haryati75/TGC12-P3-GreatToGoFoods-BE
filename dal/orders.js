@@ -19,6 +19,16 @@ const getOrderByOrderId = async (orderId) => {
     return order;
 }
 
+const getOrderByCustomerId = async (customerId) => {
+    let order = await Order.where({
+        customer_id : customerId
+    }).fetch({
+        require: false,
+        withRelated: ['customer', 'orderItems', 'orderItems.product', 'orderItems.product.category'] 
+    })
+    return order;
+}
+
 const getPendingOrderByCustomerId = async (customerId) => {
     let order = await Order.where({
         customer_id : customerId,
@@ -57,4 +67,10 @@ const deleteOrderItems = async (orderId) => {
     return null;
 }
 
-module.exports = { getAllOrders, getOrderByOrderId, getPendingOrderByCustomerId, getOrderItemsByOrderId, setOrderStatus, deleteOrderItems }
+module.exports = { getAllOrders, 
+    getOrderByOrderId, 
+    getOrderByCustomerId,
+    getPendingOrderByCustomerId, 
+    getOrderItemsByOrderId, 
+    setOrderStatus, 
+    deleteOrderItems }
