@@ -72,13 +72,11 @@ const setUserPassword = async (userId, password) => {
     }
 }
 
-const saveUser = async (userData) => {
+const saveUser = async (userId, name, email) => {
     try {
-        const user = await getUserById(userData.id);
-        user.set('name', userData.name);
-        user.set('email', userData.email);
-        user.set('password', userData.password);
-        user.set('role', userData.role);
+        const user = await getUserById(userId);
+        user.set('name', name);
+        user.set('email', email);
         user.set('modified_on', new Date());
         await user.save();
         return user;

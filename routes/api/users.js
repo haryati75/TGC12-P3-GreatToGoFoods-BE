@@ -57,10 +57,13 @@ router.post('/login', async (req, res) => {
 router.get('/profile', checkIfAuthenticatedJWT, async (req, res) => {
     console.log("API called>> get profile")
     const userId = req.user.id;
-    const customerProfile = await getCustomerByUserId(userId);
+    const customer = await getCustomerByUserId(userId);
     
-    if (!customerProfile) { res.status(403); }
-    res.send(customerProfile);
+    if (!customer) { 
+        return res.status(404); 
+    }
+    res.status(200);
+    res.send(customer);
 })
 
 router.post('/profile', async (req, res) => {
@@ -69,7 +72,7 @@ router.post('/profile', async (req, res) => {
     customerForm.handle(req, {
         'empty': async(form) => {
             console.log("empty form")
-            res.status(204);
+            res.status(403);
             res.json({
                 'error': "Empty form"
             });
@@ -113,10 +116,58 @@ router.post('/profile', async (req, res) => {
             }
             console.log("form errors", errors)
             res.status(400);
-            res.json(errors);
+            res.json({'error': errors});
         }
     })
 })
+
+// save edited profile
+router.put('/profile', checkIfAuthenticatedJWT, async (req, res) => {
+
+    console.log("API called>> put profile - edit customer user")
+    const customerForm = createCustomerRegistrationForm();
+    customerForm.handle(req, {
+        'empty': async(form) => {
+            console.log("empty form")
+            res.status(403);
+            res.json({
+                'error': "Empty form"
+            });
+        },
+        'success': async(form) => {
+            const { email, password, confirm_password, ... customerData } = form.data;
+
+            try {
+                const userServices = new UserServices(null);
+                await userServices.saveCustomerProfile(email, customerData);
+                console.log("save profile successful")
+                res.status(200);
+                res.json({
+                    'message': "Profile saved successfully."
+                });
+   
+            } catch (error) {
+                console.log("Edit Customer error: ", error)
+                res.status(500);
+                res.json({
+                    'error': "Server error. Please check with Administrator."
+                })
+            }                
+        },
+        'error': async(form) => {
+            let errors = {};
+            for (let key in form.fields) {
+                if (form.fields[key].error) {
+                    errors[key] = form.fields[key].error;
+                }
+            }
+            console.log("form errors", errors)
+            res.status(400);
+            res.json({'error': errors});
+        }
+    })
+})
+
 
 router.post('/refresh', async (req, res) => {
     console.log("API called>> refresh")
@@ -204,16 +255,5 @@ router.put('/change_password', checkIfAuthenticatedJWT, async (req, res) => {
     }
 })
 
-router.put('/customer/edit', checkIfAuthenticatedJWT, async (req, res) => {
-    try {
-        const userServices = new UserServices(req.user.id)
-        await userServices.saveCustomerProfile(req.body.userData, req.body.customerData);
-        res.status(200);
-        res.send("Profile saved successfully.")
-    } catch (e) {
-        res.status(400);
-        res.send("Failed to save profile changes. Please try again.")
-    }
-})
 
 module.exports = router;

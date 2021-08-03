@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
-const { getUserById, createNewUser, setUserRole, setUserPassword } = require('../dal/users');
-const { getCustomerByUserId, createNewCustomer } = require('../dal/customers');
+const { getUserById, createNewUser, setUserRole, setUserPassword, saveUser } = require('../dal/users');
+const { getCustomerByUserId, createNewCustomer, saveCustomer } = require('../dal/customers');
 
 class UserServices {
     constructor(user_id) {
@@ -109,15 +109,10 @@ class UserServices {
         }
     }
     
-    saveCustomerProfile = async (userData, customerData) => {
-        try {
-            await saveUser(userData);
-            await saveCustomer(customerData);
-            return true;
-        } catch (e) {
-            console.log("Error saving edited Profile.")
-            return false;
-        }
+    saveCustomerProfile = async (email, customerData) => {
+        const name = customerData.first_name + " " + customerData.last_name;
+        await saveUser(this.user_id, name, email);
+        await saveCustomer(customerData);
     }
 
 }
