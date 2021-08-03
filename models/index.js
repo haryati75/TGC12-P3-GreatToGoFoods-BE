@@ -10,6 +10,9 @@ const Product = bookshelf.model('Product', {
     },
     tags() {
         return this.belongsToMany('Tag');
+    },
+    orderItems() {
+        return this.hasMany('OrderItem');
     }
 })
 
@@ -45,20 +48,31 @@ const Customer = bookshelf.model('Customer', {
     }
 })
 
+// one-to-one with Product
+// one-to-one with User
 const CartItem = bookshelf.model('CartItem', {
     tableName: 'cart_items',
     product() {
         return this.belongsTo('Product');
+    },
+    user() {
+        return this.belongsTo('User');
     }
 })
 
+// one-to-many with OrderItem
+// one-to-one with Customer
 const Order = bookshelf.model('Order', {
     tableName: 'orders',
     customer() {
         return this.belongsTo('Customer');
+    },
+    orderItems() {
+        return this.hasMany('OrderItem');
     }
 })
 
+// one-to-one with Product, one-to-one with Order
 const OrderItem = bookshelf.model('OrderItem', {
     tableName: 'order_items',
     product() {

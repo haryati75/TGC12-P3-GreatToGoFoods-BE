@@ -4,7 +4,7 @@ const { Order, OrderItem } = require('../models');
 const getAllOrders = async () => {
     let orders = await Order.fetchAll({
         require: false,
-        withRelated: ['customer']
+        withRelated: ['customer', 'orderItems', 'orderItems.product', 'orderItems.product.category']
     })
     return orders;
 }
@@ -14,7 +14,7 @@ const getOrderByOrderId = async (orderId) => {
         id : orderId
     }).fetch({
         require: false,
-        withRelated: ['customer'] 
+        withRelated: ['customer', 'orderItems', 'orderItems.product'] 
     })
     return order;
 }
@@ -25,7 +25,7 @@ const getPendingOrderByCustomerId = async (customerId) => {
         order_status: "Pending"
     }).fetch({
         require: false,
-        withRelated: ['customer'] 
+        withRelated: ['customer', 'orderItems', 'orderItems.product'] 
     })
     return order;
 }

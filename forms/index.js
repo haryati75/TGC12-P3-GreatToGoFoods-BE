@@ -1,11 +1,6 @@
 // import in caolan forms
 const forms = require("forms");
 
-// create shortcuts
-const fields = forms.fields;
-const validators = forms.validators;
-const widgets = forms.widgets;
-
 var bootstrapField = (name, object) => {
     if (!Array.isArray(object.widget.classes)) { object.widget.classes = []; }
 
@@ -25,6 +20,5 @@ var bootstrapField = (name, object) => {
     var widget = object.widget.toHTML(name, object);
     return '<div class="form-group">' + label + widget + error + '</div>';
 };
-
 
 module.exports = { bootstrapField }

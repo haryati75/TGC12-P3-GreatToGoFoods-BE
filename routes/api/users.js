@@ -128,17 +128,17 @@ router.post('/register', async (req, res) => {
         let duplicateUser = await getUserByEmail(newUser.email);
         if (duplicateUser) {
             res.status(302);
-            res.send("Credentials already exists. Please try to login.");
+            res.json({message: "Credentials already exists. Please try to login."});
         }
         const userServices = new UserServices(null);
         await userServices.registerCustomerUser(newUser, newCustomer);
         console.log("Customer registered successfully.")
         res.status(200);
-        res.send("Customer registered successfully.");
+        res.json({message: "Customer registered successfully."});
     } catch (e) {
         console.log("Register customer failed: ", e);
         res.status(400);
-        res.send("Fail to register customer.");
+        res.json({message: "Failed to register customer."});
     }
 })
 

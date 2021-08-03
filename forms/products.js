@@ -173,4 +173,122 @@ const createProductForm = (categories, brands, tags) => {
     })
 }
 
-module.exports = { createProductForm }
+
+const searchProductForm = (categories, brands, tags) => {
+    return forms.create({
+        'category_id': fields.string({
+            label: 'Category',
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.select(),
+            choices: categories
+        }),
+        'brand_id': fields.string({
+            label: 'Brand',
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.select(),
+            choices: brands
+        }),
+        'tags': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.multipleSelect(),
+            choices: tags
+        }),
+        'SKU': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'name': fields.string({
+            required: false,
+            errorAfterField: true,
+            widget: widgets.text({ classes: ['input-with-feedback'] }),
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'description': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'ingredients': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'unit_base_price': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
+        }),
+        'unit_cost': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
+        }),
+        'unit_of_measure': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'kcal': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
+        }),
+        'country_source': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'quantity_in_stock': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
+        }),
+        'quantity_to_fulfill': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
+        })
+    })
+}
+
+module.exports = { createProductForm, searchProductForm }
