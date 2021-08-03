@@ -30,14 +30,12 @@ const createCustomerRegistrationForm = () => {
             }
         }),
         'address_blk': fields.string({
-            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             }
         }),
         'address_unit': fields.string({
-            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
@@ -51,7 +49,6 @@ const createCustomerRegistrationForm = () => {
             }
         }),
         'address_street_2': fields.string({
-            required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
@@ -77,7 +74,6 @@ const createCustomerRegistrationForm = () => {
             }
         }),
         'birth_date': fields.date({
-            required: true,
             label: 'Date of Birth',
             errorAfterField: true,
             widget: widgets.date(),
@@ -111,6 +107,5 @@ const createCustomerRegistrationForm = () => {
         })
     })
 }
-
 
 module.exports = { createCustomerRegistrationForm }

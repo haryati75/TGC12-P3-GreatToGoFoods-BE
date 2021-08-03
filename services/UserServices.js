@@ -90,9 +90,10 @@ class UserServices {
         }
     }
 
-    registerCustomerUser = async (newUser, newCustomer) => {
+    registerCustomerUser = async (email, password, newCustomer) => {
         // create user for customer 
-        let addedUser = await this.registerUser(newUser.name, newUser.email, newUser.password, "Customer");
+        const name = newCustomer.first_name + " " + newCustomer.last_name;
+        let addedUser = await this.registerUser(name, email, password, "Customer");
 
         // save customer record with new user_id generated
         await createNewCustomer(newCustomer, addedUser.get('id'));

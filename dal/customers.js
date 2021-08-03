@@ -11,22 +11,10 @@ const getCustomerByUserId = async (userId) => {
     return customer;
 }
 
-const createNewCustomer = async (customerData, userId) => {
+const createNewCustomer = async (customerData, user_id) => {
     // Customer-User: 1-to-1 relationship 
     try {
-        const customer = new Customer({
-            'first_name': customerData.first_name,
-            'last_name' : customerData.last_name,
-            'contact_no': customerData.contact_no,
-            'address_blk': customerData.address_blk,
-            'address_unit': customerData.address_unit,
-            'address_street_1': customerData.address_street_1,
-            'address_street_2': customerData.address_street_2,
-            'address_postal_code': customerData.address_postal_code,
-            'gender': customerData.gender,
-            'birth_date': customerData.birth_date,
-            'user_id': userId
-        })
+        const customer = new Customer({...customerData, user_id });
         await customer.save();
         return customer;
     } catch (e) {

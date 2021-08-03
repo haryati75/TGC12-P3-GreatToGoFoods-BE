@@ -7,6 +7,7 @@ const { getUserByEmail } = require('../../dal/users');
 const { getCustomerByUserId } = require('../../dal/customers');
 const UserServices  = require('../../services/UserServices');
 const { checkIfAuthenticatedJWT } = require('../../middlewares');
+const { createCustomerRegistrationForm } = require('../../forms/customers');
 
 
 const generateAccessToken = (user, secret, expiresIn) => {
@@ -39,26 +40,82 @@ router.post('/login', async (req, res) => {
                 userName : user.get('name')
             })
         } else {
-            console.log("login failed")
             res.status(401);
             res.json({
-                'message': 'Wrong credentials provided.'
+                'error': 'Wrong credentials provided.'
             })
         }
     } catch (e) {
         console.log(e);
         res.status(400);
-        res.send("Login failed.")
+        res.json({
+            'error': "Login failed."
+        });
     }
 })
 
 router.get('/profile', checkIfAuthenticatedJWT, async (req, res) => {
-    console.log("API called>> profile")
+    console.log("API called>> get profile")
     const userId = req.user.id;
     const customerProfile = await getCustomerByUserId(userId);
     
     if (!customerProfile) { res.status(403); }
     res.send(customerProfile);
+})
+
+router.post('/profile', async (req, res) => {
+    console.log("API called>> post profile - register customer user")
+    const customerForm = createCustomerRegistrationForm();
+    customerForm.handle(req, {
+        'empty': async(form) => {
+            console.log("empty form")
+            res.status(204);
+            res.json({
+                'error': "Empty form"
+            });
+        },
+        'success': async(form) => {
+            const { email, password, confirm_password, ... customerData } = form.data;
+
+            // check if user already exists
+            let duplicateUser = await getUserByEmail(email);
+            if (duplicateUser) {
+                console.log("profile duplicate")
+                res.status(302);
+                res.json({
+                    'error': "Credentials already exists."
+                });
+            } else {
+                // create customer as user 
+                try {
+                    const userServices = new UserServices(null);
+                    await userServices.registerCustomerUser(email, password, customerData);
+                    console.log("register successful")
+                    res.status(200);
+                    res.json({
+                        'message': "Customer registered successfully."
+                    });
+                } catch (error) {
+                    console.log("Create New Customer error: ", error)
+                    res.status(500);
+                    res.json({
+                        'error': "Server error. Please check with Administrator."
+                    })
+                }                
+            }
+        },
+        'error': async(form) => {
+            let errors = {};
+            for (let key in form.fields) {
+                if (form.fields[key].error) {
+                    errors[key] = form.fields[key].error;
+                }
+            }
+            console.log("form errors", errors)
+            res.status(400);
+            res.json(errors);
+        }
+    })
 })
 
 router.post('/refresh', async (req, res) => {
@@ -116,29 +173,6 @@ router.post('/logout', async (req, res) => {
                 'message': 'Logged out successfully.'
             })
         })
-    }
-})
-
-router.post('/register', async (req, res) => {
-    console.log("API called>> register")
-    let newUser = req.body.user;
-    let newCustomer = req.body.customer;
-
-    try {
-        let duplicateUser = await getUserByEmail(newUser.email);
-        if (duplicateUser) {
-            res.status(302);
-            res.json({message: "Credentials already exists. Please try to login."});
-        }
-        const userServices = new UserServices(null);
-        await userServices.registerCustomerUser(newUser, newCustomer);
-        console.log("Customer registered successfully.")
-        res.status(200);
-        res.json({message: "Customer registered successfully."});
-    } catch (e) {
-        console.log("Register customer failed: ", e);
-        res.status(400);
-        res.json({message: "Failed to register customer."});
     }
 })
 
