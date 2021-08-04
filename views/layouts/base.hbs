@@ -22,6 +22,9 @@
         width: 100%;
         text-align: center;
       }
+      .nav-link {
+        color: white;
+      }
     </style>
    
   </head>
@@ -43,14 +46,17 @@
           <span><a href="/tags/" class="nav-item nav-link active">Tags</a></span>
           {{/if}}
 
-        <div>
+        <div class="nav-item d-block">
+          <span>
           {{#if user}}
-            <span><a href="/users/profile" class="nav-item nav-link active"></a>Hi, {{user.name}}</span>
+            <a href="/users/profile" class="nav-item nav-link active">Hi, {{user.name}}</a>
             <a href="/users/logout" class="ml-3 btn btn-danger btn-sm">Logout</a>
           {{else}}
             Hi, stranger
             <a href="/users/login" class="btn btn-primary btn-sm">Login</a>
-          {{/if}}
+          {{/if}}            
+          </span>
+
         </div>
       </div>
     </nav>

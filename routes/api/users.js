@@ -123,7 +123,7 @@ router.post('/profile', async (req, res) => {
 
 // save edited profile
 router.put('/profile', checkIfAuthenticatedJWT, async (req, res) => {
-
+    const userId = req.user.id;
     console.log("API called>> put profile - edit customer user")
     const customerForm = createCustomerRegistrationForm();
     customerForm.handle(req, {
@@ -138,14 +138,14 @@ router.put('/profile', checkIfAuthenticatedJWT, async (req, res) => {
             const { email, password, confirm_password, ... customerData } = form.data;
 
             try {
-                const userServices = new UserServices(null);
-                await userServices.saveCustomerProfile(email, customerData);
-                console.log("save profile successful")
-                res.status(200);
-                res.json({
-                    'message': "Profile saved successfully."
-                });
-   
+                const userServices = new UserServices(userId);
+                let customer = await userServices.saveCustomerProfile(email, customerData);
+                if (customer) {
+                    res.status(200);
+                    res.json({
+                        'message': "Profile saved successfully."
+                    });                    
+                } 
             } catch (error) {
                 console.log("Edit Customer error: ", error)
                 res.status(500);

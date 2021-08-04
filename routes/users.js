@@ -14,11 +14,17 @@ const { createUserRegistrationForm, createLoginForm, createChangePasswordForm } 
 
 router.get('/', checkIfAuthenticatedAdmin, async (req, res) => {
     // fetch all the users
-    let users = await getAllUsers();
+    let users = (await getAllUsers()).toJSON();
+
+    for (let eachUser of users) {
+        if (eachUser.role !== "Customer") {
+            eachUser['isNotCustomer'] = true;
+        }
+    }
 
     // convert collection to JSON and render via hbs
     res.render('users/index', {
-        'users': users.toJSON()
+        'users': users
     })
 })
 

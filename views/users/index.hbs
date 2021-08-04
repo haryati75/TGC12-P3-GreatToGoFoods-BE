@@ -35,7 +35,7 @@ Users
                 <td>{{this.last_login_on}}</td>
                 <td>{{this.modified_on}}</td>
                 <td>
-                    <a href="/users/{{this.id}}/role/verify" class="btn btn-primary btn-sm">Verify</a>
+                    {{#if this.isNotCustomer}}<a href="/users/{{this.id}}/role/verify" class="btn btn-primary btn-sm">Verify</a>{{/if}}
                     <a href="/users/{{this.id}}/role/deactivate" class="btn btn-danger btn-sm">Deactivate</a>
                 </td>
             </tr>

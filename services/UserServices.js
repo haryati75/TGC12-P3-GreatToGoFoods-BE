@@ -90,15 +90,6 @@ class UserServices {
         }
     }
 
-    registerCustomerUser = async (email, password, newCustomer) => {
-        // create user for customer 
-        const name = newCustomer.first_name + " " + newCustomer.last_name;
-        let addedUser = await this.registerUser(name, email, password, "Customer");
-
-        // save customer record with new user_id generated
-        await createNewCustomer(newCustomer, addedUser.get('id'));
-    }
-    
     getCustomerProfile = async () => {
         try {
             const customer = await getCustomerByUserId(this.user_id);
@@ -109,10 +100,28 @@ class UserServices {
         }
     }
     
-    saveCustomerProfile = async (email, customerData) => {
+    registerCustomerUser = async (email, password, newCustomer) => {
+        // create user for customer 
+        const { id, user_id, ...customerData } = newCustomer; // remove empty id/user_id from form
         const name = customerData.first_name + " " + customerData.last_name;
-        await saveUser(this.user_id, name, email);
-        await saveCustomer(customerData);
+        let addedUser = await this.registerUser(name, email, password, "Customer");
+        let customer = null;
+        if (addedUser) {
+            // save customer record with new user_id generated
+            customer = await createNewCustomer(customerData, addedUser.get('id'));            
+        }
+        return customer;
+    }
+    
+    saveCustomerProfile = async (email, customerData) => {
+        console.log("UserServices >> saveCustomerProfile ", email, customerData);
+        const name = customerData.first_name + " " + customerData.last_name;
+        const user = await saveUser(this.user_id, name, email);
+        let customer = null;
+        if (user) {
+            customer = await saveCustomer(customerData);
+        }
+        return customer;
     }
 
 }

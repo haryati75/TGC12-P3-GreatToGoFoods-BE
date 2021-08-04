@@ -25,7 +25,7 @@ const createNewCustomer = async (customerData, user_id) => {
 
 const saveCustomer = async (customerData) => {
     try {
-        const customer = await getCustomerByUserId(customerData.id);
+        const customer = await getCustomerByUserId(customerData.user_id);
         customer.set('first_name', customerData.first_name);
         customer.set('last_name', customerData.last_name);
         customer.set('contact_no', customerData.contact_no);

@@ -3,7 +3,7 @@ const router = express.Router();
 
 // import in the model and services
 const { Customer } = require('../models');
-const { getUserByEmail } = require('../dal/users');
+const { getUserByEmail, getUserById } = require('../dal/users');
 const UserServices  = require('../services/UserServices');
 
 // import in the forms
@@ -65,6 +65,27 @@ router.post('/register', (req, res) => {
             })
         }
     })
+})
+
+
+// Routes: Delete Existing Record
+// -------------------------------
+router.get('/:user_id/delete', async (req, res) => {
+    const userId = req.params.user_id;
+    const user = await getUserById(userId);
+
+    res.render('customers/delete', {
+        'user': user.toJSON()
+    })
+})
+
+router.post('/:user_id/delete', async (req, res) => {
+    const userId = req.params.user_id;
+    const user = await getUserById(userId);
+    const userName = user.get('name');
+    await user.destroy();
+    req.flash("success_messages", `Deleted User ${userName} successfully.`);
+    res.redirect('/customers');
 })
 
 module.exports = router;
