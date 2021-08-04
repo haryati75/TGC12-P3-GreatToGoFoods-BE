@@ -78,8 +78,10 @@ const api = {
 const csrfInstance = csrf();
 app.use((req, res, next) => {
     // exclude CSRF for webhooks or api
-    if (req.url === '/api/checkout/process-payment'  || req.url.slice(0,5)=="/api/") {
+    if (req.url === '/api/checkout/process-payment') {
         return next();
+    }  else if (req.url.slice(0,5)=="/api/") {
+        return express.json()(req, res, next);
     }
     csrfInstance(req, res, next);
 })
@@ -117,11 +119,12 @@ async function main() {
     app.use('/orders', orderRoutes);
 
     // all routes that are part of API must specifiy to use express.json middleware
-    app.use('/api/lists', express.json(), api.lists);
-    app.use('/api/products', express.json(), api.products);
-    app.use('/api/users', express.json(), api.users);
-    app.use('/api/shopping-cart', checkIfAuthenticatedJWT, express.json(), api.cart);
-    app.use('/api/checkout', express.json(), api.checkout)
+    app.use('/api/lists', api.lists);
+    app.use('/api/products', api.products);
+    app.use('/api/users',api.users);
+    app.use('/api/shopping-cart', checkIfAuthenticatedJWT, api.cart);
+    app.use('/api/checkout', api.checkout);
+
 }
 
 main();

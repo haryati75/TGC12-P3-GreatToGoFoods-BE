@@ -24,10 +24,12 @@ exports.up = function(db) {
     },
     'email': {
       'type': 'string',
+      'length': 300,
       'notNull': true
     },
     'password': {
       'type': 'string',
+      'length': 50,
       'notNull': true
     },
     'role': {

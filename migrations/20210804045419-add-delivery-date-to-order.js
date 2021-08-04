@@ -15,25 +15,13 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return db.createTable('brands', {
-    'id': { 'type': 'int', 'unsigned': true, 'primaryKey': true, 'autoIncrement': true },
-    'name': {
-      'type': 'string',
-      'length': 150,
-      'notNull': true
-    },
-    'logo_image_url': {
-      'type': 'string',
-      'length': 300
-    },
-    'description': {
-      'type': 'text'
-    }
+  return db.addColumn('orders', 'delivery_date', {
+    type: 'date'
   });
 };
 
 exports.down = function(db) {
-  return db.dropTable('brands');
+  return db.removeColumn('orders', 'delivery_date');
 };
 
 exports._meta = {

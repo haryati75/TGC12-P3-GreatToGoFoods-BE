@@ -14,25 +14,35 @@ class CartServices {
     async createCartOrder(cartItemsWithAmountJSON) {
         const customer = await getCustomerByUserId(this.user_id);
         const totalOrderAmount = this.getCartTotalAmount(cartItemsWithAmountJSON);
+        const deliveryAddress = customer.get('address_blk') + " " + customer.get('address_unit') + " " 
+            + customer.get('address_street_1') + " " + customer.get('address_street_2') + " " + "Singapore " + customer.get('address_postal_code')
 
         // check if pending Order exists
         let order = await getPendingOrderByCustomerId(customer.get('id'));
 
         // ensure order status and payment status are Pending 
+        const orderDate = new Date();
+        const deliveryDate = new Date();
+        deliveryDate.setDate(orderDate.getDate() + 3);
+
         if (!order) {
             order = new Order({
                 'customer_id' : customer.get('id'),
-                'order_date' : new Date(),
+                'order_date' : orderDate,
                 'order_amount_total': totalOrderAmount,
                 'order_status' : "Pending",
                 'payment_status' : "Pending",
+                'delivery_date': deliveryDate,
+                'delivery_address': deliveryAddress,
                 'created_on': new Date()
             })
         } else {
-            order.set('order_date', new Date());
+            order.set('order_date', orderDate);
             order.set('order_amount_total', totalOrderAmount);
             order.set('order_status', "Pending");
             order.set('payment_status', "Pending");
+            order.set('delivery_date', deliveryDate);
+            order.set('delivery_address', deliveryAddress);
             order.set('modified_on', new Date());
         }
         await order.save()
@@ -126,6 +136,7 @@ class CartServices {
         // update all payment-related fields in Order
         if (order) {
             order.set('order_status','Paid');
+            order.set('payment_stripe_id', stripeSession.id);
             order.set('payment_status', stripeSession.payment_status);
             order.set('payment_reference', stripeSession.payment_intent);
             order.set('payment_mode', stripeSession.payment_method_types[0]);

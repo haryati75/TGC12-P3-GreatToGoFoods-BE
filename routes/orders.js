@@ -9,6 +9,7 @@ router.get('/', async (req, res) => {
 
     for (let eachOrder of orders) {
         eachOrder['orderDateStr'] = eachOrder.order_date.toLocaleDateString('en-GB')
+        eachOrder['deliveryDateStr'] = eachOrder.delivery_date.toLocaleDateString('en-GB')
         eachOrder['orderTotalAmountStr'] = (eachOrder.order_amount_total / 100).toFixed(2)
 
         for (let eachItem of eachOrder.orderItems) {

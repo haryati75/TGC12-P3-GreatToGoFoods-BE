@@ -19,14 +19,16 @@ router.get('/', async (req, res) => {
         console.log("checkIfAuthenticatedJWT success")
     });
     console.log("API called >> checkout ")
-    const cart = new CartServices(user.id);
 
     // get all the items from the cart
+    const cart = new CartServices(user.id);
     const itemsJSON = await cart.getCartJSON();
 
     // create an Order with a "Pending" status, with related Customer details
     // will also create Order_Details from Cart_Items
     const cartOrder = await cart.createCartOrder(itemsJSON);
+    // clear Cart after Order is created 
+    await cart.clearCart();
 
     // step 1 - create line items
     let lineItems = [];
@@ -86,15 +88,16 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/process-payment', bodyParser.raw({type: 'application/json'}), async (req, res) => {
-    console.log("Webhook Stripe API: reached Express process-payment.")
+
     let payload = req.body;
+    console.log(payload);
     let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
     let sigHeader = req.headers["stripe-signature"];
     let event;
     try {
         event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
     } catch (e) {        
-        console.log("Webhook Stripe API error: ", e.message)
+        res.status(401)
         res.send({
             'error': e.message
         })
@@ -103,21 +106,13 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
     if (event.type == 'checkout.session.completed') {
         let stripeSession = event.data.object;
         console.log("From Stripe", stripeSession);
-        
-        console.log("Stripe Completed: Backend Payment Processing");
-        let cart = new CartServices(parseInt(stripeSession.metadata.userId));
 
         // 1. set Order Status to Paid, copy Stripe Payment details
+        let cart = new CartServices(parseInt(stripeSession.metadata.userId));
         await cart.confirmStripePaid(stripeSession);
-
-        // 2. clear Cart
-        await cart.clearCart();
     }
     res.send({ received: true })
 })
 
-router.post('/show-receipt', async (req, res) => {
-    
-})
 
 module.exports = router;

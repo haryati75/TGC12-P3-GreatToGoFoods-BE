@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const CartServices = require('../../services/CartServices');
+const { getCustomerByUserId } = require('../../dal/customers');
 
 router.get('/', async (req, res) => {
     console.log("API called >> Get Cart")
+    let customer = await getCustomerByUserId(req.user.id);
     let cart = new CartServices(req.user.id);
     let cartItems = await cart.getCartJSON();
     let totalQuantity = 0
@@ -19,6 +21,7 @@ router.get('/', async (req, res) => {
 
     res.json({
         'cartItems': cartItems,
+        customer,
         totalAmount,
         totalQuantity
     })
