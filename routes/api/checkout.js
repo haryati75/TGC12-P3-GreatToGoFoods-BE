@@ -108,6 +108,7 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
         console.log("From Stripe", stripeSession);
 
         // 1. set Order Status to Paid, copy Stripe Payment details
+        // 2. update Product stock quantity to fulfillment
         let cart = new CartServices(parseInt(stripeSession.metadata.userId));
         await cart.confirmStripePaid(stripeSession);
     }

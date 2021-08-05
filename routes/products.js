@@ -186,6 +186,23 @@ router.post('/:product_id/update', async (req, res) => {
     })
 })
 
+// Update Stock of Product
+router.post('/:product_id/stock/update', async (req, res) => {
+    try {
+        const productId = req.params.product_id;
+        const product = await getProductById(productId);
+        product.set('quantity_in_stock', product.get('quantity_in_stock') + parseInt(req.body.quantityToAdd));
+        product.set('date_modified', new Date());
+        await product.save();
+        req.flash("success_messages", "Quantity in Stock successfully updated.");
+        res.redirect('/products');
+    } catch (e) {
+        console.log("Error in Quantity in Stock >>", e)
+        req.flash("error_messages", "Error: Fail to update Quantity in Stock.");
+        res.redirect('/products');
+    }
+})
+
 // Routes: Delete Existing Record
 // -------------------------------
 router.get('/:product_id/delete', async (req, res) => {

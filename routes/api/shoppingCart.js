@@ -27,15 +27,17 @@ router.get('/', async (req, res) => {
     })
 })
 
-router.get('/order/:order_id', async (req, res) => {
-    console.log("API called>> get paid Order", req.params.order_id)
+router.get('/order/:stripe_session_id', async (req, res) => {
+    console.log("API called>> get Order by Stripe Session", req.params.stripe_session_id)
+    let stripeSessionId = req.params.stripe_session_id;
     let cart = new CartServices(req.user.id);
     try {
-        let order = await cart.getCustomerOrder(req.params.order_id);
+        let order = await cart.getPaidOrder(stripeSessionId);
         res.json({
             order
         })
     } catch (e) {
+        console.log("Failed retrieval of stripe session order", e);
         res.status(403);
         res.json({
             'message': "Unable to retrieve order details."
@@ -54,8 +56,32 @@ router.get('/:product_id/add', async (req, res) => {
             cartItem
         })
     } catch (e) {
-        res.sendStatus(403)
+        res.status(403);
         res.send("Unable to add to cart", e);
+    }
+})
+
+router.get('/:product_id/quantity/add/:quantity', async (req, res) => {
+    let productId = req.params.product_id;
+    let quantity = req.params.quantity;
+    console.log("API called>> cart update product quantity", productId, quantity)
+    try {
+        let cart = new CartServices(req.user.id);
+        let cartItem = await cart.addQuantityToProduct(productId, parseInt(quantity));
+        if (cartItem) {
+            console.log('Successfully updated quantity to cart product', productId, quantity);
+            res.status(200);
+            res.json({
+                cartItem
+            })            
+        } else {
+            throw ("Not found. Unable to update quantity in product-cart")
+        }
+
+    } catch (e) {
+        console.log("Error adding quantity to cart", productId, quantity, e);
+        res.status(403);
+        res.json("Unable to add quantity to cart product", productId, quantity, e);
     }
 })
 

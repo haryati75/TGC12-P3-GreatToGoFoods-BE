@@ -1,7 +1,7 @@
 // Data Access Layer
 const { getCartItems, getCartItemByUserAndProduct, addCartItem } = require('../dal/cart_items');
 const { getCustomerByUserId } = require('../dal/customers');
-const { getOrderByOrderId, getOrderByCustomerId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems } = require('../dal/orders');
+const { getOrderByOrderId, getOrderByStripeId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems } = require('../dal/orders');
 const { getProductById } = require('../dal/products');
 
 const { CartItem, Order, OrderItem } = require('../models')
@@ -128,6 +128,19 @@ class CartServices {
         return null;
     }
 
+    async addQuantityToProduct (productId, quantityToAdd) {
+        // check if the item already exist
+        let cartItem = await getCartItemByUserAndProduct(this.user_id, productId);
+
+        if (cartItem) {
+            cartItem.set('quantity', cartItem.get('quantity') + quantityToAdd);
+            cartItem.set('modified_on', new Date());
+            await cartItem.save();
+            return cartItem;
+        } 
+        return null;
+    }
+
     async confirmStripePaid (stripeSession) {
         // client reference holds OrderId 
         let orderId = stripeSession.client_reference_id;
@@ -178,8 +191,8 @@ class CartServices {
         return cartItems;
     }
 
-    async getCustomerOrder(orderId) {
-        let order = await getOrderByCustomerId(orderId).toJSON();
+    async getPaidOrder(stripeId) {
+        let order = (await getOrderByStripeId(stripeId)).toJSON();
 
         order['orderDateStr'] = order.order_date.toLocaleDateString('en-GB')
         order['orderTotalAmountStr'] = (order.order_amount_total / 100).toFixed(2)

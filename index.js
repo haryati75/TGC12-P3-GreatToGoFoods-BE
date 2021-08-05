@@ -63,7 +63,6 @@ const tagRoutes = require('./routes/tags');
 const userRoutes = require('./routes/users');
 const customerRoutes = require('./routes/customers');
 const cloudinaryRoutes = require('./routes/cloudinary');
-const shoppingCartRoutes = require('./routes/shoppingCart');
 const checkoutRoutes = require('./routes/checkout');
 const orderRoutes = require('./routes/orders');
 const api = {
@@ -114,17 +113,16 @@ async function main() {
     app.use('/users', userRoutes);
     app.use('/customers', checkIfAuthenticated, customerRoutes)
     app.use('/cloudinary', cloudinaryRoutes);
-    app.use('/shopping-cart', shoppingCartRoutes);
     app.use('/checkout', checkoutRoutes);
     app.use('/orders', orderRoutes);
 
-    // all routes that are part of API must specifiy to use express.json middleware
+    // all routes that are part of API 
+    // see middleware above for API exclusion of CSRF and include express.json()
     app.use('/api/lists', api.lists);
     app.use('/api/products', api.products);
     app.use('/api/users',api.users);
     app.use('/api/shopping-cart', checkIfAuthenticatedJWT, api.cart);
     app.use('/api/checkout', api.checkout);
-
 }
 
 main();

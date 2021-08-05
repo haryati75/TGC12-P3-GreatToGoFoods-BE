@@ -29,6 +29,17 @@ const getOrderByCustomerId = async (customerId) => {
     return order;
 }
 
+const getOrderByStripeId = async (stripeSessionId) => {
+    let order = await Order.where({
+        payment_stripe_id : stripeSessionId
+    }).fetch({
+        require: false,
+        withRelated: ['customer', 'orderItems', 'orderItems.product', 'orderItems.product.category'] 
+    })
+    return order;
+}
+
+
 const getPendingOrderByCustomerId = async (customerId) => {
     let order = await Order.where({
         customer_id : customerId,
@@ -70,6 +81,7 @@ const deleteOrderItems = async (orderId) => {
 module.exports = { getAllOrders, 
     getOrderByOrderId, 
     getOrderByCustomerId,
+    getOrderByStripeId,
     getPendingOrderByCustomerId, 
     getOrderItemsByOrderId, 
     setOrderStatus, 
