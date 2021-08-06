@@ -64,6 +64,7 @@ const getPendingOrderByCustomerId = async (customerId) => {
 const setOrderStatus = async (orderId, newStatus) => {
     let order = await getOrderByOrderId(orderId); 
     order.set('order_status', newStatus);
+    order.set('modified_on', new Date());
     await order.save();
     return order;
 }

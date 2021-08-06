@@ -21,7 +21,7 @@ Orders
             <th>Total Amount</th>
             <th>Order Status</th>
             <th>Payment Status</th>
-            <th></th>
+            <th>For Your Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -37,9 +37,15 @@ Orders
                 <td>{{this.payment_status}}</td>
 
                 <td>
-                    <a href="/orders/{{this.id}}/set-status/Processing" class="btn btn-secondary btn-sm">Process</a>
-                    <a href="/orders/{{this.id}}/set-status/Delivering" class="btn btn-primary btn-sm">Deliver</a>
-                    <a href="/orders/{{this.id}}/set-status/Complete" class="btn btn-success btn-sm">Complete</a>
+                    {{#if this.isBtnShowProcessing}}
+                        <a href="/orders/{{this.id}}/set-status/Processing" class="btn btn-secondary btn-sm">Check Stock</a>
+                    {{/if}}
+                    {{#if this.isBtnShowDelivering}}
+                        <a href="/orders/{{this.id}}/set-status/Delivering" class="btn btn-primary btn-sm">Deliver</a>
+                    {{/if}}
+                    {{#if this.isBtnShowComplete}}
+                        <a href="/orders/{{this.id}}/set-status/Complete" class="btn btn-success btn-sm">Complete</a>
+                    {{/if}}
                     <a href="/orders/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
 

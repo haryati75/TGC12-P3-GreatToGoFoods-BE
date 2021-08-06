@@ -26,7 +26,15 @@ const getAllProducts = async () => {
     })
 }
 
+const updateProductQuantityToFulfil = async (productId, deltaQuantity) => {
+    let product = await getProductById(productId); 
+    console.log("product before update quantity to fulfill", productId, product.get('quantity_to_fulfill'))
+    product.set('quantity_to_fulfill', product.get('quantity_to_fulfill') + deltaQuantity);
+    product.set('date_modified', new Date());
+    await product.save();
+    return product;
+}
 
 module.exports = {
-    getProductById, getAllProductNames, getAllProducts
+    getProductById, getAllProductNames, getAllProducts, updateProductQuantityToFulfil
 }
