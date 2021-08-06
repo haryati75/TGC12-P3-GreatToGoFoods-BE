@@ -1,7 +1,7 @@
 // Data Access Layer
 const { getCartItems, getCartItemByUserAndProduct, addCartItem } = require('../dal/cart_items');
 const { getCustomerByUserId } = require('../dal/customers');
-const { getOrderByOrderId, getOrderByStripeId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems } = require('../dal/orders');
+const { getAllOrdersByCustomerId, getOrderByOrderId, getOrderByStripeId, getPendingOrderByCustomerId, getOrderItemsByOrderId, deleteOrderItems } = require('../dal/orders');
 const { getProductById } = require('../dal/products');
 
 const { CartItem, Order, OrderItem } = require('../models')
@@ -202,6 +202,24 @@ class CartServices {
             eachItem['amountStr'] = ((eachItem.unit_sales_price * eachItem.quantity) / 100).toFixed(2);
         }
         return order;
+    }
+
+    async getAllOrdersByCustomer() {
+        const customer = await getCustomerByUserId(this.user_id);
+        let orders = (await getAllOrdersByCustomerId(customer.get('id'))).toJSON();
+        console.log("CartServices getAllOrdersByCustomer", orders);
+
+        for (let eachOrder of orders) {
+            eachOrder['orderDateStr'] = eachOrder.order_date.toLocaleDateString('en-GB')
+            eachOrder['orderTotalAmountStr'] = (eachOrder.order_amount_total / 100).toFixed(2)
+
+            for (let eachItem of eachOrder.orderItems) {
+                eachItem['unitSalesPriceStr'] = (eachItem.unit_sales_price / 100).toFixed(2);
+                eachItem['amountStr'] = ((eachItem.unit_sales_price * eachItem.quantity) / 100).toFixed(2);
+            }            
+        }
+
+        return orders;
     }
 }
 

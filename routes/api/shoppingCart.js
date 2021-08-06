@@ -27,6 +27,24 @@ router.get('/', async (req, res) => {
     })
 })
 
+router.get('/orders', async (req, res) => {
+    console.log("API called >> Get All Orders for User", req.user.id)
+
+    let cart = new CartServices(req.user.id);
+    try {
+        let orders = await cart.getAllOrdersByCustomer();
+        res.json({
+            orders
+        })
+    } catch (e) {
+        console.log("Failed retrieval of customer orders", e);
+        res.status(403);
+        res.json({
+            'message': "Unable to retrieve all user orders"
+        })
+    }
+})
+
 router.get('/order/:stripe_session_id', async (req, res) => {
     console.log("API called>> get Order by Stripe Session", req.params.stripe_session_id)
     let stripeSessionId = req.params.stripe_session_id;
