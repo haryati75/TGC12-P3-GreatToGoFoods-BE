@@ -63,7 +63,6 @@ const tagRoutes = require('./routes/tags');
 const userRoutes = require('./routes/users');
 const customerRoutes = require('./routes/customers');
 const cloudinaryRoutes = require('./routes/cloudinary');
-const checkoutRoutes = require('./routes/checkout');
 const orderRoutes = require('./routes/orders');
 const api = {
     lists: require('./routes/api/lists'),
@@ -113,7 +112,6 @@ async function main() {
     app.use('/users', userRoutes);
     app.use('/customers', checkIfAuthenticated, customerRoutes)
     app.use('/cloudinary', cloudinaryRoutes);
-    app.use('/checkout', checkoutRoutes);
     app.use('/orders', orderRoutes);
 
     // all routes that are part of API 

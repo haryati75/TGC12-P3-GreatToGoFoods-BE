@@ -28,11 +28,7 @@ class OrderServices {
         // (Done at Front-end Checkout - Stripe successful): 
         // when pending to paid - reduce stocks by quantity ordered (can turn to negative), increase quantity to fulfill
 
-        // To be processed backend here: 
-        // when paid to processing - if all stocks in Order Items >= 0, change status to "Ready to Deliver", else change to "Processing - Low Stock"
-        // when "Ready to Deliver" to "Complete"
-        // cannot "Complete" if still in "Processing - Low Stock"
-
+        // To check if need to update Product's quantity to fulfill 
         for (let eachItem of order.orderItems) {
             if ((eachItem.product.quantity_to_fulfill + eachItem.product.quantity_in_stock) < 0) {
                 isLowStock = true;
@@ -44,7 +40,7 @@ class OrderServices {
         try {
             if (newStatus === "Processing") {
                 if (isLowStock) {
-                    setStatus = "Processing - Low Stock"
+                    setStatus = "Processing - Low Stock" // see Add Product Stock feature
                 } else {
                     setStatus = "Ready to Deliver"
                 }

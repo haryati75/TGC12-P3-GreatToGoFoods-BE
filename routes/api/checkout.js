@@ -27,8 +27,6 @@ router.get('/', async (req, res) => {
     // create an Order with a "Pending" status, with related Customer details
     // will also create Order_Details from Cart_Items
     const cartOrder = await cart.createCartOrder(itemsJSON);
-    // clear Cart after Order is created 
-    await cart.clearCart();
 
     // step 1 - create line items
     let lineItems = [];
@@ -108,9 +106,12 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
         console.log("From Stripe", stripeSession);
 
         // 1. set Order Status to Paid, copy Stripe Payment details
-        // 2. update Product stock quantity to fulfillment
+        // 2. transfer order item quantity from Product stock quantity to fulfillment
         let cart = new CartServices(parseInt(stripeSession.metadata.userId));
         await cart.confirmStripePaid(stripeSession);
+
+        // clear Cart after Order is successfully paid 
+        await cart.clearCart();
     }
     res.send({ received: true })
 })

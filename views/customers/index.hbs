@@ -18,9 +18,10 @@ Customers
             <th>Name</th>
             <th>Contact</th>
             <th>Email</th>
+            <th>Address</th>
+            <th>Postal Code</th>
             <th>Registered On</th>
             <th>Last Login</th>
-
             <th></th>
         </tr>
     </thead>
@@ -31,10 +32,12 @@ Customers
                 <td>{{this.user.name}}</td>
                 <td>{{this.contact_no}}</td>
                 <td>{{this.user.email}}</td>
+                <td>{{this.address_blk}} {{this.address_unit}} {{this.address_street_1}} {{this.address_street_2}}</td>
+                <td>Singapore {{this.address_postal_code}}</td>
                 <td>{{this.user.created_on}}</td>
                 <td>{{this.user.last_login_on}}</td>
-
                 <td>
+                    <a href="/customers/{{this.user_id}}/update" class="btn btn-primary btn-sm my-1">Edit</a>
                     <a href="/customers/{{this.user_id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
