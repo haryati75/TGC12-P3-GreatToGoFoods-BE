@@ -2,7 +2,7 @@
 const { Order, OrderItem } = require('../models');
 
 const getAllOrders = async () => {
-    let orders = await Order.fetchAll({
+    let orders = await Order.query('orderBy', 'id', 'DESC').fetchAll({
         require: false,
         withRelated: ['customer', 'orderItems', 'orderItems.product', 'orderItems.product.category']
     })
@@ -10,7 +10,7 @@ const getAllOrders = async () => {
 }
 
 const getAllOrdersByCustomerId = async (customerId) => {
-    let orders = await Order.where({
+    let orders = await Order.query('orderBy', 'id', 'DESC').where({
         customer_id : customerId
     }).fetchAll({
         require: false,

@@ -7,7 +7,7 @@ const { getUserByEmail } = require('../../dal/users');
 const { getCustomerByUserId } = require('../../dal/customers');
 const UserServices  = require('../../services/UserServices');
 const { checkIfAuthenticatedJWT } = require('../../middlewares');
-const { createCustomerRegistrationForm } = require('../../forms/customers');
+const { createCustomerRegistrationForm, createCustomerEditForm } = require('../../forms/customers');
 
 
 const generateAccessToken = (user, secret, expiresIn) => {
@@ -125,7 +125,7 @@ router.post('/profile', async (req, res) => {
 router.put('/profile', checkIfAuthenticatedJWT, async (req, res) => {
     const userId = req.user.id;
     console.log("API called>> put profile - edit customer user")
-    const customerForm = createCustomerRegistrationForm();
+    const customerForm = createCustomerEditForm();
     customerForm.handle(req, {
         'empty': async(form) => {
             console.log("empty form")
@@ -135,7 +135,7 @@ router.put('/profile', checkIfAuthenticatedJWT, async (req, res) => {
             });
         },
         'success': async(form) => {
-            const { email, password, confirm_password, ... customerData } = form.data;
+            const { email, ...customerData } = form.data;
 
             try {
                 const userServices = new UserServices(userId);

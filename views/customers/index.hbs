@@ -38,6 +38,7 @@ Customers
                 <td>{{this.user.last_login_on}}</td>
                 <td>
                     <a href="/customers/{{this.user_id}}/update" class="btn btn-primary btn-sm my-1">Edit</a>
+                    <a href="/users/{{this.user_id}}/role/Customer/deactivate" class="btn btn-secondary btn-sm">Deactivate</a>
                     <a href="/customers/{{this.user_id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>

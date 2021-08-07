@@ -16,7 +16,7 @@
         text-align: center;
       }
       footer {
-        position: fixed;
+        {{!-- position: fixed; --}}
         left: 0;
         bottom: 0;
         width: 100%;
@@ -36,13 +36,16 @@
         <a href="/" class="navbar-brand">GreatToGo Foods eShop</a>
 
           {{#if user}}
-          <span><a href="/products/" class="nav-item nav-link active">Products</a></span>
+            <span><a href="/products/" class="nav-item nav-link active">Products</a></span>
 
-          <span><a href="/orders/" class="nav-item nav-link active">Orders</a></span>
-          <span><a href="/customers/" class="nav-item nav-link active">Customers</a></span>
+            <span><a href="/orders/" class="nav-item nav-link active">Orders</a></span>
+            <span><a href="/customers/" class="nav-item nav-link active">Customers</a></span>
 
-          <span><a href="/brands/" class="nav-item nav-link active">Brands</a></span>
-          <span><a href="/tags/" class="nav-item nav-link active">Tags</a></span>
+            <span><a href="/brands/" class="nav-item nav-link active">Brands</a></span>
+            <span><a href="/tags/" class="nav-item nav-link active">Tags</a></span>
+
+            <span><a href="/users/" class="nav-item nav-link active">Users</a></span>
+            <span><a href="/categories/" class="nav-item nav-link active">Categories</a></span>
           {{/if}}
 
         <div class="nav-item d-block">

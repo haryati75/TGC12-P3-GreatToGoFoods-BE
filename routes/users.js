@@ -5,20 +5,20 @@ const router = express.Router();
 const { checkIfAuthenticatedAdmin } = require('../middlewares/index');
 
 // import in the dal and services
-const { getAllUsers, getUserByEmail } = require('../dal/users');
+const { getAllUsers, getUserByEmail, getUserById, saveUser } = require('../dal/users');
 const UserServices  = require('../services/UserServices');
 
 // import in the forms
 const { bootstrapField } = require('../forms');
-const { createUserRegistrationForm, createLoginForm, createChangePasswordForm } = require('../forms/users');
+const { createUserRegistrationForm, createLoginForm, createChangePasswordForm, createUserEditForm } = require('../forms/users');
 
 router.get('/', checkIfAuthenticatedAdmin, async (req, res) => {
     // fetch all the users
     let users = (await getAllUsers()).toJSON();
 
     for (let eachUser of users) {
-        if (eachUser.role !== "Customer") {
-            eachUser['isNotCustomer'] = true;
+        if (eachUser.role.includes("Deactivated") || eachUser.role === "Not Verified") {
+            eachUser['isDeactivated'] = true;
         }
     }
 
@@ -200,9 +200,9 @@ router.get('/:user_id/role/verify', async (req, res) => {
     }
 })
 
-router.get('/:user_id/role/deactivate', async (req, res) => {
+router.get('/:user_id/role/:current_role/deactivate', async (req, res) => {
     const userServices = new UserServices(req.params.user_id);
-    let user = await userServices.deactivateUser();
+    let user = await userServices.deactivateUser(req.params.current_role);
     if (user) {
         req.flash("success_messages", "User deactivated.");
         res.redirect('/users');
@@ -217,6 +217,65 @@ router.get('/logout', (req, res) => {
     req.session.user = null;
     req.flash("success_messages", "Goodbye");
     res.redirect("/users/login")
+})
+
+
+// Routes: Update Existing Record
+// -------------------------------
+
+router.get('/:user_id/update', async (req, res) => {
+    const userId = req.params.user_id;
+    const user = await getUserById(userId);
+
+    const userForm = createUserEditForm();
+    userForm.fields.name.value = user.get('name');
+    userForm.fields.email.value = user.get('email');
+
+    res.render('users/update', {
+        'form': userForm.toHTML(bootstrapField),
+    })
+})
+
+router.post('/:user_id/update', async (req, res) => {
+    const userId = req.params.user_id;
+    const userForm = createUserEditForm();
+    userForm.handle(req, {
+        'success': async (form) => {
+            try {
+                await saveUser(userId, form.data.name, form.data.email);
+                req.flash("success_messages", `Changes to User ${form.data.name} has been saved successfully.`);
+                res.redirect('/users');
+            } catch (e) {
+                req.flash("error_messages", `Failed to save User ${form.data.name}.`);
+                res.redirect('/users');
+            }
+        },
+        'error': async (form) => {
+            res.render('users/update', {
+                'form': form.toHTML(bootstrapField),
+            })
+        }
+    })
+})
+
+// Routes: Delete Existing Record
+// -------------------------------
+router.get('/:user_id/delete', async (req, res) => {
+    const userId = req.params.user_id;
+    const user = await getUserById(userId);
+
+    res.render('users/delete', {
+        'user': user.toJSON()
+    })
+})
+
+router.post('/:user_id/delete', async (req, res) => {
+    const userId = req.params.user_id;
+    const user = await getUserById(userId);
+    const userName = user.get('name');
+    await user.destroy();
+    req.flash("success_messages", `Deleted User ${userName} successfully.`);
+    res.redirect('/users');
 })
 
 module.exports = router;

@@ -1,0 +1,22 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Users
+{{/block}}
+
+{{#block 'content'}}
+
+<header class="">
+    <h1>Update User: {{user.name}}</h1>
+</header>
+
+<form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    {{{form}}}
+    <input type="submit" value="Save Changes" class="btn btn-primary"/>
+    <a href="/users" class="btn btn-dark">Cancel</a>
+</form>
+
+{{/block}}
+
+{{/extends}}

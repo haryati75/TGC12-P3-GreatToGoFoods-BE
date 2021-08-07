@@ -35,8 +35,13 @@ Users
                 <td>{{this.last_login_on}}</td>
                 <td>{{this.modified_on}}</td>
                 <td>
-                    {{#if this.isNotCustomer}}<a href="/users/{{this.id}}/role/verify" class="btn btn-primary btn-sm">Verify</a>{{/if}}
-                    <a href="/users/{{this.id}}/role/deactivate" class="btn btn-danger btn-sm">Deactivate</a>
+                    {{#if this.isDeactivated}}
+                        <a href="/users/{{this.id}}/role/verify" class="btn btn-success btn-sm">Verify</a>
+                    {{else}}
+                        <a href="/users/{{this.id}}/role/Business/deactivate" class="btn btn-warning btn-sm">Deactivate</a>
+                    {{/if}}
+                    <a href="/users/{{this.id}}/update" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/users/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
         {{/each}}

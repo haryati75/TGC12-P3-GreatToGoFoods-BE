@@ -51,22 +51,27 @@ class UserServices {
         // this allows user to login to backend system
         try {
             const user = await getUserById(this.user_id);
-            if (user.get('role') != "Customer") {
+            const currentRole = user.get('role');
+            if (currentRole !== "Customer" && currentRole !== "Deactivated-Customer") {
                 const verifiedUser = await setUserRole(this.user_id, "Business");
                 return verifiedUser;
+            } else if (currentRole === "Deactivated-Customer") {
+                const verifiedUser = await setUserRole(this.user_id, "Customer");
+                return verifiedUser;                
             }
-            return user;
+            return null;
         } catch (e) {
             console.log("Error verifying user: ", e)
             return null;
         }
     }
     
-    deactivateUser = async () => {
+    deactivateUser = async (currentRole) => {
         // instead of deleting user, change the role to "Deactivated" 
         // to prevent access to the system
         try {
-            const user = await setUserRole(this.user_id, "Deactivated");
+            let roleToSet = currentRole === "Customer" ? "Deactivated-Customer" : "Deactivated";
+            const user = await setUserRole(this.user_id, roleToSet);
             return user;
         } catch (e) {
             console.log("Error deactivating user: ", e)
@@ -100,9 +105,8 @@ class UserServices {
         }
     }
     
-    registerCustomerUser = async (email, password, newCustomer) => {
+    registerCustomerUser = async (email, password, customerData) => {
         // create user for customer 
-        const { id, user_id, ...customerData } = newCustomer; // remove empty id/user_id from form
         const name = customerData.first_name + " " + customerData.last_name;
         let addedUser = await this.registerUser(name, email, password, "Customer");
         let customer = null;
@@ -114,7 +118,6 @@ class UserServices {
     }
     
     saveCustomerProfile = async (email, customerData) => {
-        console.log("UserServices >> saveCustomerProfile ", email, customerData);
         const name = customerData.first_name + " " + customerData.last_name;
         const user = await saveUser(this.user_id, name, email);
         let customer = null;

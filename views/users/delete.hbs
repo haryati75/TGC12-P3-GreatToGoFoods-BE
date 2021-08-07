@@ -1,0 +1,24 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Users
+{{/block}}
+
+{{#block 'content'}}
+
+<header class="">
+    <h1>Delete User: {{user.name}}</h1>
+</header>
+
+<form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <div class="alert alert-danger">
+        <p>Are you sure you want to delete {{user.name}}?</p> 
+        <input type="submit" value="Yes" class="btn btn-danger"/>
+        <a href="/users" class="btn btn-success">No</a>
+    </div>
+</form>
+
+{{/block}}
+
+{{/extends}}

@@ -23,7 +23,7 @@ class CartServices {
         // ensure order status and payment status are Pending 
         const orderDate = new Date();
         const deliveryDate = new Date();
-        deliveryDate.setDate(orderDate.getDate() + 3);
+        deliveryDate.setDate(orderDate.getDate() + 1);
 
         if (!order) {
             order = new Order({

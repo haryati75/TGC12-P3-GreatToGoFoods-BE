@@ -3,8 +3,8 @@ const router = express.Router();
 
 // import in the model and services
 const { Customer } = require('../models');
-const { getCustomerByUserId } = require('../dal/customers');
-const { getUserByEmail, getUserById } = require('../dal/users');
+const { getCustomerByUserId, saveCustomer } = require('../dal/customers');
+const { getUserByEmail, getUserById, saveUser } = require('../dal/users');
 const UserServices  = require('../services/UserServices');
 
 // import in the forms
@@ -15,7 +15,8 @@ const { createCustomerRegistrationForm, createCustomerEditForm } = require('../f
 // -----------------------
 router.get('/', async (req, res) => {
     // fetch all the customers
-    let customers = await Customer.collection().fetch({
+    let customers = await Customer.collection().query('orderBy', 'id', 'DESC')
+    .fetch({
         require: false,
         withRelated: [ 'user']
     });
@@ -40,6 +41,11 @@ router.get('/register', (req, res) => {
 router.post('/register', (req, res) => {
     const registerCustomerForm = createCustomerRegistrationForm();
     registerCustomerForm.handle(req, {
+        // empty form redundant here as some fields have the required validation
+        'empty': async (form) => {
+            req.flash("error_messages", `Unable to register empty customer form. Please try again.`);
+            res.redirect('/customers');
+        },
         'success': async (form) => {
             // split the form from User and Customer data
             const { email, password, confirm_password, ...customerData } = form.data;
@@ -48,25 +54,21 @@ router.post('/register', (req, res) => {
                 let duplicateUser = await getUserByEmail(email);
                 if (duplicateUser) {
                     req.flash("error_messages", "Customer Registration failed. Credential already exists.")
-                    res.redirect('/');
-                }            
-                const newUser = { 
-                    'name': customerData.first_name + ' ' + customerData.last_name,
-                    email,
-                    password
-                }
-                const userServices = new UserServices(null);
-                await userServices.registerCustomerUser(newUser, newCustomer);
-                req.flash("success_messages", "Customer registered successfully.")
-                res.redirect('/');
+                    res.redirect('/users');
+                } else {
+                    const userServices = new UserServices(null);
+                    await userServices.registerCustomerUser(email, password, customerData);
+                    req.flash("success_messages", "Customer registered successfully.")
+                    res.redirect('/customers');
+                } 
             } catch (e) {
-                console.log("register customer error", e);
-                req.flash("error_messages", "Failed to register customer.")
+                console.log("Error register customer: ", e);
+                req.flash("error_messages", "Failed to register customer.");
                 res.redirect('/customers');
             }
         },
         'error': (form) => {
-            res.render('users/register', {
+            res.render('customers/register', {
                 'form': form.toHTML(bootstrapField)
             })
         }
@@ -79,7 +81,6 @@ router.post('/register', (req, res) => {
 router.get('/:user_id/update', async (req, res) => {
     const userId = req.params.user_id;
     const customer = (await getCustomerByUserId(userId)).toJSON();
-    console.log("get customer update email", customer.user.email);
     const customerForm = createCustomerEditForm();
     customerForm.fields.email.value = customer.user.email;
     customerForm.fields.first_name.value = customer.first_name;
@@ -101,22 +102,27 @@ router.get('/:user_id/update', async (req, res) => {
 
 router.post('/:user_id/update', async (req, res) => {
     const userId = req.params.user_id;
-    const customer = await getCustomerByUserId(userId);
-
     const customerForm = createCustomerEditForm();
     customerForm.handle(req, {
+        'empty': async (form) => {
+            // empty form redundant here as some fields have the required validation
+            req.flash("error_messages", `Unable to save empty customer form. Please try again`);
+            res.redirect('/customers');
+        },
         'success': async (form) => {
             let { email, ...customerData } = form.data;
-            customer.set(customerData);
-            customer.save();
+            try {
+                let user = await saveUser(userId, customerData.first_name + " " + customerData.last_name, email);
+                customerData['user_id'] = userId;
+                let customer = await saveCustomer(customerData);
 
-            let user = await getUserById(userId);
-            user.set('name', customer.get('first_name') + " " + customer.get('last_name'));
-            user.set('email', email);
-            user.save();
-
-            req.flash("success_messages", `Changes to Customer ${user.get('name')} has been saved successfully.`);
-            res.redirect('/customers');
+                req.flash("success_messages", `Changes to Customer ${user.get('name')} has been saved successfully.`);
+                res.redirect('/customers');            
+            } catch (e) {
+                console.log("Error saving customer: ", e)
+                req.flash("error_messages", `Unable to save customer changes. Please try again`);
+                res.redirect('/customers');
+            }
         },
         'error': async (form) => {
             res.render('customers/update', {
@@ -144,7 +150,7 @@ router.post('/:user_id/delete', async (req, res) => {
     const user = await getUserById(userId);
     const userName = user.get('name');
     await user.destroy();
-    req.flash("success_messages", `Deleted User ${userName} successfully.`);
+    req.flash("success_messages", `Deleted Customer ${userName} successfully.`);
     res.redirect('/customers');
 })
 

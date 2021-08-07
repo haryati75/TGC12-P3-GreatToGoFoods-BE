@@ -112,7 +112,7 @@ async function main() {
     app.use('/users', userRoutes);
     app.use('/customers', checkIfAuthenticated, customerRoutes)
     app.use('/cloudinary', cloudinaryRoutes);
-    app.use('/orders', orderRoutes);
+    app.use('/orders', checkIfAuthenticated, orderRoutes);
 
     // all routes that are part of API 
     // see middleware above for API exclusion of CSRF and include express.json()

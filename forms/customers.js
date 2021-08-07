@@ -6,14 +6,9 @@ const fields = forms.fields;
 const validators = forms.validators;
 const widgets = forms.widgets;
 
+// contains both user and customer fields
 const createCustomerRegistrationForm = () => {
     return forms.create({
-        'id': fields.number({
-            widget: widgets.hidden()
-        }),
-        'user_id': fields.number({
-            widget: widgets.hidden()
-        }),
         'first_name': fields.string({
             required: true,
             errorAfterField: true,
@@ -114,7 +109,7 @@ const createCustomerRegistrationForm = () => {
     })
 }
 
-
+// contains only customer fields
 const createCustomerEditForm = () => {
     return forms.create({
         'id': fields.number({

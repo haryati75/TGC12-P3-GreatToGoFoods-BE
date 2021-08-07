@@ -4,9 +4,9 @@ const { User } = require('../models');
 
 const getAllUsers = async () => {
     let users = await User
-    // .where(
-    //     'role', '<>', 'Customer'
-    // )
+    .where(
+        'role', '<>', 'Customer'
+    )
     .fetchAll({
         require: false
     })
