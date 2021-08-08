@@ -95,6 +95,17 @@ class UserServices {
         }
     }
 
+    resetPassword = async (newPassword) => {
+        try {
+            const user = await setUserPassword(this.user_id, this.getHashedPassword(newPassword))
+            console.log("Password changed.")
+            return user;
+        } catch (e) {
+            console.log("Error changing password: ", e)
+            return null;
+        }
+    }
+
     getCustomerProfile = async () => {
         try {
             const customer = await getCustomerByUserId(this.user_id);

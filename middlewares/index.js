@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const checkIfAuthenticated = (req, res, next) => {
-    if (req.session.user && (req.session.user.role === "Business" || req.session.user.role === "Admin" || req.session.user.role === "Customer")) {
+    if (req.session.user && (req.session.user.role === "Business" || req.session.user.role === "Admin")) {
         next()
     } else {
         req.flash("error_messages", "You need to sign in to access this page.");
@@ -12,7 +12,6 @@ const checkIfAuthenticated = (req, res, next) => {
 const checkIfAuthenticatedAdmin = (req, res, next) => {
     if (req.session.user) {
         if (req.session.user.role == "Admin") {
-            console.log("authenticated");
             next();
         } else {
             req.flash("error_messages", "You are not authorized to access that page. Please contact your Administrator.");
@@ -33,11 +32,10 @@ const checkIfAuthenticatedJWT = (req, res, next) => {
 
         jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
             if (err) {
-                console.log("checkIfAuthenticatedJWT err 403")
+                console.log("checkIfAuthenticatedJWT err 403", err)
                 return res.sendStatus(403)
             }
             req.user = user;
-            console.log("checkIfAuthenticatedJWT success")
             next();
         });
     } else {

@@ -8,12 +8,20 @@ const { getCustomerByUserId } = require('../../dal/customers');
 const UserServices  = require('../../services/UserServices');
 const { checkIfAuthenticatedJWT } = require('../../middlewares');
 const { createCustomerRegistrationForm, createCustomerEditForm } = require('../../forms/customers');
-
+const { createResetPasswordForm } = require('../../forms/users');
 
 const generateAccessToken = (user, secret, expiresIn) => {
     return jwt.sign({
         'username': user.get('name'),
         'id': user.get('id'),
+        'email': user.get('email')
+    }, secret, {
+        expiresIn
+    });
+}
+
+const generateResetToken = (user, secret, expiresIn) => {
+    return jwt.sign({
         'email': user.get('email')
     }, secret, {
         expiresIn
@@ -255,17 +263,25 @@ router.put('/change_password', checkIfAuthenticatedJWT, async (req, res) => {
     }
 })
 
+// ---------------------------------------
+// Forget Password / Reset Password Routes
+// using JWT authentication
+// Email is via front-end React
+// ---------------------------------------
+
 router.post('/forget_password', async(req, res) => {
     const email = req.body.email;
-    console.log("API called forget_password get token", req.body);
+    console.log("API called forget_password get token", email);
 
     // get Customer by email
     const user = await getUserByEmail(email);
 
     if (user) {
         // if found, generate token
-        let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1h');
-        console.log("token generated for forget password")
+        let accessToken = generateResetToken(user, process.env.TOKEN_SECRET, '1h');
+        // user.set('reset_password_token', accessToken);
+        // await user.save();
+        console.log("token generated for forget password", accessToken);
         res.status(200);
         res.json({
             accessToken, 
@@ -280,34 +296,65 @@ router.post('/forget_password', async(req, res) => {
     }
 })
 
-// router.put('/reset_password', checkIfAuthenticatedJWT, async (req, res) => {
-//     const userId = req.user.id;
+router.get('/profile_token', checkIfAuthenticatedJWT, async (req, res) => {
+    console.log("API called>> get profile by token (reset password)")
+    const email = req.user.email;
+    const user = await getUserByEmail(email);
+    
+    if (!user) { 
+        return res.status(404); 
+    }
+    res.status(200);
+    res.send(user);
+})
 
-//     console.log("API called>> change password for user", userId)
+router.put('/reset_password', checkIfAuthenticatedJWT, async (req, res) => {
+    const email = req.user.email;
+    console.log("API called>> reset password for user", req.user, req.body.newPassword)
 
-//     const userForm = createResetPasswordForm();
-//     if (!oldPassword || !newPassword) {
-//         res.status(400)
-//         res.send("Missing credentials")
-//         return;
-//     }
-//     try {
-//         const userServices = new UserServices(userId);
-//         let user = await userServices.changePassword(oldPassword, newPassword);
-//         if (user) {
-//             res.status(200);
-//             res.send("Password successfully changed.")  
-//         } else {
-//             res.status(403);
-//             console.log("Wrong credentials.")
-//             res.send("Wrong credentials provided. Please try again.")
-//         }
-
-//     } catch (e) {
-//         res.status(400);
-//         res.send("Failed changing password. Please try again.")
-//     }
-// })
-
+    const userForm = createResetPasswordForm();
+    userForm.handle(req, {
+        'empty': async(form) => {
+            console.log("empty form")
+            res.status(403);
+            res.json({
+                'error': "Empty form"
+            });
+        },
+        'success': async(form) => {
+            console.log("resetPasswordForm : ", form.data);
+            const { new_password } = form.data;
+            try {
+                const user = await getUserByEmail(email);
+                const userServices = new UserServices(user.get('id'));
+                let userUpdated = await userServices.resetPassword(new_password);
+                if (userUpdated) {
+                    res.status(200);
+                    res.json({
+                        'message': "Password reset successfully."
+                    });                    
+                } 
+            } catch (error) {
+                console.log("Password reset error: ", error)
+                res.status(500);
+                res.json({
+                    'error': "Server error for password reset. Please check with Administrator."
+                })
+            }                
+        },
+        'error': async(form) => {
+            console.log("Error resetPasswordForm : ", form.data);
+            let errors = {};
+            for (let key in form.fields) {
+                if (form.fields[key].error) {
+                    errors[key] = form.fields[key].error;
+                }
+            }
+            console.log("password reset form errors", errors)
+            res.status(400);
+            res.json({'error': errors});
+        }
+    })
+})
 
 module.exports = router;

@@ -70,7 +70,7 @@ const setUserPassword = async (userId, password) => {
         return user;
     } catch (e) {
         console.log("Error set password: ", e)
-        return null;
+        return e;
     }
 }
 
