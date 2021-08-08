@@ -255,5 +255,59 @@ router.put('/change_password', checkIfAuthenticatedJWT, async (req, res) => {
     }
 })
 
+router.post('/forget_password', async(req, res) => {
+    const email = req.body.email;
+    console.log("API called forget_password get token", req.body);
+
+    // get Customer by email
+    const user = await getUserByEmail(email);
+
+    if (user) {
+        // if found, generate token
+        let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1h');
+        console.log("token generated for forget password")
+        res.status(200);
+        res.json({
+            accessToken, 
+            userName : user.get('name')
+        })
+
+    } else {
+        res.status(401);
+        res.json({
+            'error': 'Wrong credentials provided.'
+        })
+    }
+})
+
+// router.put('/reset_password', checkIfAuthenticatedJWT, async (req, res) => {
+//     const userId = req.user.id;
+
+//     console.log("API called>> change password for user", userId)
+
+//     const userForm = createResetPasswordForm();
+//     if (!oldPassword || !newPassword) {
+//         res.status(400)
+//         res.send("Missing credentials")
+//         return;
+//     }
+//     try {
+//         const userServices = new UserServices(userId);
+//         let user = await userServices.changePassword(oldPassword, newPassword);
+//         if (user) {
+//             res.status(200);
+//             res.send("Password successfully changed.")  
+//         } else {
+//             res.status(403);
+//             console.log("Wrong credentials.")
+//             res.send("Wrong credentials provided. Please try again.")
+//         }
+
+//     } catch (e) {
+//         res.status(400);
+//         res.send("Failed changing password. Please try again.")
+//     }
+// })
+
 
 module.exports = router;

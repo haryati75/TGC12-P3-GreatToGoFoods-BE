@@ -107,4 +107,24 @@ const createUserEditForm = () => {
     })
 }
 
-module.exports = { createUserRegistrationForm, createLoginForm, createChangePasswordForm, createUserEditForm }
+const createResetPasswordForm = () => {
+    return forms.create({
+        'new_password': fields.password({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'confirm_password': fields.password({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            validators: [ validators.matchField('new_password') ]
+        })
+    })
+}
+
+module.exports = { createUserRegistrationForm, createLoginForm, createChangePasswordForm, createUserEditForm, createResetPasswordForm }
