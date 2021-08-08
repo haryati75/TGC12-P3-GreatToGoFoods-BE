@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+// import the Forms
+const { bootstrapField } = require('../forms');
+const { updateOrderForm } = require('../forms/orders')
+
 // import the DAL and services
 const { getAllOrders, getOrderByOrderId, deleteOrderItems } = require('../dal/orders');
 const OrderServices = require('../services/OrderServices');
@@ -27,8 +31,8 @@ router.get('/', async (req, res) => {
     })
 })
 
-// Routes: Edit Existing Record
-// ----------------------------
+// Routes: Edit Existing Record for specific fields
+// ------------------------------------------------
 
 // set Order statuses
 router.get('/:order_id/set-status/:new_status', async (req, res) => {
@@ -65,6 +69,61 @@ router.post('/:order_id/set-status/:new_status', async (req, res) => {
     }
 
 })
+
+// Routes: Update Existing Record
+// -------------------------------
+
+router.get('/:order_id/update', async (req, res) => {
+    const orderId = req.params.order_id;
+    const order = await getOrderByOrderId(orderId);
+
+    const orderForm = updateOrderForm();
+    orderForm.fields.order_date.value = order.get('order_date');
+    orderForm.fields.order_amount_total.value = order.get('order_amount_total');
+    orderForm.fields.order_status.value = order.get('order_status');
+    orderForm.fields.payment_status.value = order.get('payment_status');
+    orderForm.fields.payment_reference.value = order.get('payment_reference');
+    orderForm.fields.payment_stripe_id.value = order.get('payment_stripe_id');
+    orderForm.fields.payment_mode.value = order.get('payment_mode');
+    orderForm.fields.payment_amount_total.value = order.get('payment_amount_total');
+    orderForm.fields.payment_confirmed_on.value = order.get('payment_confirmed_on');
+    orderForm.fields.delivery_address.value = order.get('delivery_address');
+    orderForm.fields.delivery_date.value = order.get('delivery_date');
+
+    const orderJSON = order.toJSON();
+    for (let eachItem of orderJSON.orderItems) {
+        eachItem['unitSalesPriceStr'] = (eachItem.unit_sales_price / 100).toFixed(2);
+        eachItem['amountStr'] = ((eachItem.unit_sales_price * eachItem.quantity) / 100).toFixed(2);
+    }
+
+    res.render('orders/update', {
+        'form': orderForm.toHTML(bootstrapField),
+        order : orderJSON
+    })
+})
+
+router.post('/:order_id/update', async (req, res) => {
+    const orderId = req.params.order_id;
+    const order = await getOrderByOrderId(orderId);
+
+    const orderForm = updateOrderForm();
+    orderForm.handle(req, {
+        'success': async (form) => {
+            order.set(form.data);
+            order.set('modified_on', new Date());
+            await order.save();
+            req.flash("success_messages", `Changes to Order ${order.get('id')} has been saved successfully.`);
+            res.redirect('/orders');
+        },
+        'error': async (form) => {
+            res.render('orders/update', {
+                'form': form.toHTML(bootstrapField),
+                'category': category.toJSON()
+            })
+        }
+    })
+})
+
 
 // Routes: Delete Existing Record
 // -------------------------------

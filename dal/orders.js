@@ -24,7 +24,7 @@ const getOrderByOrderId = async (orderId) => {
         id : orderId
     }).fetch({
         require: false,
-        withRelated: ['customer', 'orderItems', 'orderItems.product'] 
+        withRelated: ['customer', 'orderItems', 'orderItems.product', 'orderItems.product.category'] 
     })
     return order;
 }

@@ -1,0 +1,54 @@
+{{#extends 'base'}}
+
+{{#block 'title'}}
+Orders
+{{/block}}
+
+{{#block 'content'}}
+
+<header class="">
+    <h1>Update Order: {{order.id}} for {{order.customer.first_name}} {{order.customer.last_name}}</h1>
+</header>
+
+<form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    {{{form}}}
+    <input type="submit" value="Save Changes To Order" class="btn btn-primary mt-3"/>
+    <a href="/orders" class="btn btn-dark mt-3">Cancel</a>
+</form>
+
+<table class="table">
+    <thead>
+        <tr><th></th><th>Order Details</th></tr>
+        <tr>
+            <th></th>
+            <th>Image</th>            
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Amount</th>                               
+        </tr>
+    </thead>
+    <tbody>
+        {{#each order.orderItems}}
+            <tr>
+                <td></td>
+                <td>
+                    {{#if this.product.image_url}}
+                        <img src="{{this.product.image_url}}" class="img-fluid img-thumbnail" style="max-height:120px; max-width:150px"/>
+                    {{/if}}
+                </td>                
+                <td>{{this.product.name}}</td>
+                <td>{{this.product.category.name}}</td>
+                <td>$ {{this.unitSalesPriceStr}}</td>
+                <td>{{this.quantity}}</td>
+                <td>$ {{this.amountStr}}</td>            
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+             
+{{/block}}
+
+{{/extends}}
