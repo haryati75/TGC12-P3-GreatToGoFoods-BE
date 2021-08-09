@@ -15,14 +15,14 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return db.addColumn('users', 'reset_password_token', {
+  return db.addColumn('users', 'refresh_token', {
     type: 'string',
     length: 500
   });
 };
 
 exports.down = function(db) {
-  return db.removeColumn('users', 'reset_password_token');
+  return db.removeColumn('users', 'refresh_token');
 };
 
 exports._meta = {
