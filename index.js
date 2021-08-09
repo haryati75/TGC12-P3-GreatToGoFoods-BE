@@ -124,7 +124,7 @@ async function main() {
 
 main();
 
-// app.listen(3000, ()=>{
-app.listen(process.env.PORT, ()=>{
+app.listen(3000, ()=>{
+// app.listen(process.env.PORT, ()=>{
     console.log("GTGF: Server has started")
 })
