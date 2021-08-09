@@ -85,7 +85,6 @@ app.use((req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    console.log("checking for csrf err >>", err);
     if (err && err.code == "EBADCSRFTOKEN") {
         req.flash('error_messages', 'The form has expired. Please try again');
         res.redirect('back');
@@ -125,6 +124,7 @@ async function main() {
 
 main();
 
-app.listen(3000, ()=>{
+// app.listen(3000, ()=>{
+app.listen(process.env.PORT, ()=>{
     console.log("GTGF: Server has started")
 })
