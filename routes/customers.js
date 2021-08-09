@@ -21,9 +21,16 @@ router.get('/', async (req, res) => {
         withRelated: [ 'user']
     });
 
+    let customersJSON = customers.toJSON();
+
+    for (let eachCustomer of customersJSON) {
+        eachCustomer['createdOnStr'] = (eachCustomer.user.created_on).toLocaleString('en-SG');
+        eachCustomer['lastLoginOnStr'] = eachCustomer.user.last_login_on ? (eachCustomer.user.last_login_on).toLocaleString('en-SG') : null;
+    }
+
     // convert collection to JSON and render via hbs
     res.render('customers/index', {
-        'customers': customers.toJSON()
+        'customers': customersJSON
     })
 })
 

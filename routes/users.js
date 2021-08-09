@@ -20,6 +20,9 @@ router.get('/', checkIfAuthenticatedAdmin, async (req, res) => {
         if (eachUser.role.includes("Deactivated") || eachUser.role === "Not Verified") {
             eachUser['isDeactivated'] = true;
         }
+        eachUser['createdOnStr'] = (eachUser.created_on).toLocaleString('en-SG');
+        eachUser['lastLoginOnStr'] = eachUser.last_login_on ? (eachUser.last_login_on).toLocaleString('en-SG') : null;
+        eachUser['modifiedOnStr'] = eachUser.modified_on ? (eachUser.modified_on).toLocaleString('en-SG') : null;
     }
 
     // convert collection to JSON and render via hbs

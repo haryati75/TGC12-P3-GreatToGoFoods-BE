@@ -165,15 +165,13 @@ class CartServices {
         let orderItems = await getOrderItemsByOrderId(orderId);
 
         for (const item of orderItems.toJSON()) {
-            console.log("OrderItem stockUpdate", item.quantity, item.product.name, item.product.quantity_in_stock, item.product.quantity_to_fulfill)
             let product = await getProductById(item.product_id)
             if (product) {
                 product.set('quantity_in_stock', item.product.quantity_in_stock - item.quantity);
                 product.set('quantity_to_fulfill', item.product.quantity_to_fulfill + item.quantity)
                 await product.save()
-                console.log("Quantity updated in Product Stock")
             } else {
-                console.log("Stock not updated")
+                console.log("Stock not updated for product: ", product.get('id'))
             }
         }
         // OrderItems with related Products stock updated
@@ -186,7 +184,7 @@ class CartServices {
         if (cartItems.length > 0) {
             cartItems = await CartItem.where({
                 user_id : this.user_id
-            }).destroy().then( console.log("Clear all items in cart for user >>", this.user_id) );   
+            }).destroy();   
         }
         return cartItems;
     }
@@ -207,7 +205,6 @@ class CartServices {
     async getAllOrdersByCustomer() {
         const customer = await getCustomerByUserId(this.user_id);
         let orders = (await getAllOrdersByCustomerId(customer.get('id'))).toJSON();
-        console.log("CartServices getAllOrdersByCustomer", orders);
 
         for (let eachOrder of orders) {
             eachOrder['orderDateStr'] = eachOrder.order_date.toLocaleDateString('en-GB')
@@ -218,7 +215,6 @@ class CartServices {
                 eachItem['amountStr'] = ((eachItem.unit_sales_price * eachItem.quantity) / 100).toFixed(2);
             }            
         }
-
         return orders;
     }
 }

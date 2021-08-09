@@ -34,11 +34,11 @@ Customers
                 <td>{{this.user.email}}</td>
                 <td>{{this.address_blk}} {{this.address_unit}} {{this.address_street_1}} {{this.address_street_2}}</td>
                 <td>Singapore {{this.address_postal_code}}</td>
-                <td>{{this.user.created_on}}</td>
-                <td>{{this.user.last_login_on}}</td>
+                <td>{{this.createdOnStr}}</td>
+                <td>{{this.lastLoginOnStr}}</td>
                 <td>
+                    <a href="/users/{{this.user_id}}/role/Customer/deactivate" class="btn btn-warning btn-sm">Deactivate</a>
                     <a href="/customers/{{this.user_id}}/update" class="btn btn-primary btn-sm my-1">Edit</a>
-                    <a href="/users/{{this.user_id}}/role/Customer/deactivate" class="btn btn-secondary btn-sm">Deactivate</a>
                     <a href="/customers/{{this.user_id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>

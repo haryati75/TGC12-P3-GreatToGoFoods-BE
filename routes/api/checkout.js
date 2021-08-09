@@ -16,9 +16,7 @@ router.get('/', async (req, res) => {
             res.redirect(callback);
         }
         user = result;
-        console.log("checkIfAuthenticatedJWT success")
     });
-    console.log("API called >> checkout ")
 
     // get all the items from the cart
     const cart = new CartServices(user.id);
@@ -72,12 +70,8 @@ router.get('/', async (req, res) => {
         }
     }
 
-    console.log("PAYMENT with metaData", payment);
-
     // 3. register the session
     let stripeSession = await Stripe.checkout.sessions.create(payment);
-
-    console.log("created session id: ", stripeSession.id);
 
     res.render('checkout/index', {
         'sessionId': stripeSession.id,
@@ -88,7 +82,6 @@ router.get('/', async (req, res) => {
 router.post('/process-payment', bodyParser.raw({type: 'application/json'}), async (req, res) => {
 
     let payload = req.body;
-    console.log(payload);
     let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
     let sigHeader = req.headers["stripe-signature"];
     let event;
@@ -103,7 +96,6 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
     }
     if (event.type == 'checkout.session.completed') {
         let stripeSession = event.data.object;
-        console.log("From Stripe", stripeSession);
 
         // 1. set Order Status to Paid, copy Stripe Payment details
         // 2. transfer order item quantity from Product stock quantity to fulfillment

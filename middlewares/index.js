@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+// To authenticate backend-users
 const checkIfAuthenticated = (req, res, next) => {
     if (req.session.user && (req.session.user.role === "Business" || req.session.user.role === "Admin")) {
         next()
@@ -9,6 +10,7 @@ const checkIfAuthenticated = (req, res, next) => {
     }
 }
 
+// To authenticate Admin super-user for secured back-end functions
 const checkIfAuthenticatedAdmin = (req, res, next) => {
     if (req.session.user) {
         if (req.session.user.role == "Admin") {
@@ -23,8 +25,8 @@ const checkIfAuthenticatedAdmin = (req, res, next) => {
     }
 }
 
+// to authenticate login Customer-User
 const checkIfAuthenticatedJWT = (req, res, next) => {
-    console.log("authenticatedJWT...")
     const authHeader = req.headers.authorization;
     if (authHeader) {
         //Bear <token>

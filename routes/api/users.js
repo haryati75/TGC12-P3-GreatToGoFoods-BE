@@ -29,7 +29,6 @@ const generateResetToken = (user, secret, expiresIn) => {
 }
 
 router.post('/login', async (req, res) => {
-    console.log("API called>> login")
     try {
         const email = req.body.email;
         const user = await getUserByEmail(email);
@@ -37,11 +36,10 @@ router.post('/login', async (req, res) => {
         let result = await userServices.isPasswordMatch(req.body.password)
         if (result === true) {
             let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1d');
-            let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '1d');
+            let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '3d');
             // save login datetime
             user.set('last_login_on', new Date());
             await user.save();
-            console.log("login successful")
             res.status(200);
             res.json({
                 accessToken, refreshToken, 
@@ -63,7 +61,6 @@ router.post('/login', async (req, res) => {
 })
 
 router.get('/profile', checkIfAuthenticatedJWT, async (req, res) => {
-    console.log("API called>> get profile")
     const userId = req.user.id;
     const customer = await getCustomerByUserId(userId);
     
@@ -75,7 +72,6 @@ router.get('/profile', checkIfAuthenticatedJWT, async (req, res) => {
 })
 
 router.post('/profile', async (req, res) => {
-    console.log("API called>> post profile - register customer user")
     const customerForm = createCustomerRegistrationForm();
     customerForm.handle(req, {
         'empty': async(form) => {
@@ -91,7 +87,6 @@ router.post('/profile', async (req, res) => {
             // check if user already exists
             let duplicateUser = await getUserByEmail(email);
             if (duplicateUser) {
-                console.log("profile duplicate")
                 res.status(302);
                 res.json({
                     'error': "Credentials already exists."
@@ -101,7 +96,6 @@ router.post('/profile', async (req, res) => {
                 try {
                     const userServices = new UserServices(null);
                     await userServices.registerCustomerUser(email, password, customerData);
-                    console.log("register successful")
                     res.status(200);
                     res.json({
                         'message': "Customer registered successfully."
@@ -132,7 +126,6 @@ router.post('/profile', async (req, res) => {
 // save edited profile
 router.put('/profile', checkIfAuthenticatedJWT, async (req, res) => {
     const userId = req.user.id;
-    console.log("API called>> put profile - edit customer user")
     const customerForm = createCustomerEditForm();
     customerForm.handle(req, {
         'empty': async(form) => {
@@ -176,9 +169,7 @@ router.put('/profile', checkIfAuthenticatedJWT, async (req, res) => {
     })
 })
 
-
 router.post('/refresh', async (req, res) => {
-    console.log("API called>> refresh")
     let refreshToken = req.body.refreshToken;
     if (!refreshToken) {
         res.status(401);
@@ -211,7 +202,6 @@ router.post('/refresh', async (req, res) => {
 })
 
 router.post('/logout', async (req, res) => {
-    console.log("API called>> logout")
     let refreshToken = req.body.refreshToken;
     if (!refreshToken) {
         console.log("logout error 401")
@@ -226,7 +216,6 @@ router.post('/logout', async (req, res) => {
             token.set('token', refreshToken);
             token.set('date_created', new Date()); 
             await token.save();
-            console.log("logout successful")
             res.status(200)
             res.send({
                 'message': 'Logged out successfully.'
@@ -239,7 +228,7 @@ router.put('/change_password', checkIfAuthenticatedJWT, async (req, res) => {
     const userId = req.user.id;
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword; 
-    console.log("API called>> change password for user", userId)
+    
     if (!oldPassword || !newPassword) {
         res.status(400)
         res.send("Missing credentials")
@@ -271,7 +260,6 @@ router.put('/change_password', checkIfAuthenticatedJWT, async (req, res) => {
 
 router.post('/forget_password', async(req, res) => {
     const email = req.body.email;
-    console.log("API called forget_password get token", email);
 
     // get Customer by email
     const user = await getUserByEmail(email);
@@ -279,15 +267,12 @@ router.post('/forget_password', async(req, res) => {
     if (user) {
         // if found, generate token
         let accessToken = generateResetToken(user, process.env.TOKEN_SECRET, '1h');
-        // user.set('reset_password_token', accessToken);
-        // await user.save();
-        console.log("token generated for forget password", accessToken);
         res.status(200);
         res.json({
             accessToken, 
-            userName : user.get('name')
+            userName : user.get('name'),
+            emailJSUserId : process.env.EMAILJS_USERID
         })
-
     } else {
         res.status(401);
         res.json({
@@ -297,10 +282,8 @@ router.post('/forget_password', async(req, res) => {
 })
 
 router.get('/profile_token', checkIfAuthenticatedJWT, async (req, res) => {
-    console.log("API called>> get profile by token (reset password)")
     const email = req.user.email;
     const user = await getUserByEmail(email);
-    
     if (!user) { 
         return res.status(404); 
     }
@@ -310,8 +293,6 @@ router.get('/profile_token', checkIfAuthenticatedJWT, async (req, res) => {
 
 router.put('/reset_password', checkIfAuthenticatedJWT, async (req, res) => {
     const email = req.user.email;
-    console.log("API called>> reset password for user", req.user, req.body.newPassword)
-
     const userForm = createResetPasswordForm();
     userForm.handle(req, {
         'empty': async(form) => {
@@ -322,7 +303,6 @@ router.put('/reset_password', checkIfAuthenticatedJWT, async (req, res) => {
             });
         },
         'success': async(form) => {
-            console.log("resetPasswordForm : ", form.data);
             const { new_password } = form.data;
             try {
                 const user = await getUserByEmail(email);
@@ -343,7 +323,6 @@ router.put('/reset_password', checkIfAuthenticatedJWT, async (req, res) => {
             }                
         },
         'error': async(form) => {
-            console.log("Error resetPasswordForm : ", form.data);
             let errors = {};
             for (let key in form.fields) {
                 if (form.fields[key].error) {

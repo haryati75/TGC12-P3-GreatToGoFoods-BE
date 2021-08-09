@@ -26,7 +26,9 @@ Orders
             <th>Name</th>
             <th>Category</th>
             <th>Price</th>
-            <th>Quantity</th>
+            <th>Quantity Ordered</th>
+            <th>In Stock</th>
+            <th>To Fulfill</th>
             <th>Amount</th>                               
         </tr>
     </thead>
@@ -43,6 +45,8 @@ Orders
                 <td>{{this.product.category.name}}</td>
                 <td>$ {{this.unitSalesPriceStr}}</td>
                 <td>{{this.quantity}}</td>
+                <td>{{this.product.quantity_in_stock}}</td>
+                <td>{{this.product.quantity_to_fulfill}}</td>
                 <td>$ {{this.amountStr}}</td>            
             </tr>
         {{/each}}
