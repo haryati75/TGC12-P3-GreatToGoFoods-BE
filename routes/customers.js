@@ -121,7 +121,7 @@ router.post('/:user_id/update', async (req, res) => {
             try {
                 let user = await saveUser(userId, customerData.first_name + " " + customerData.last_name, email);
                 customerData['user_id'] = userId;
-                let customer = await saveCustomer(customerData);
+                await saveCustomer(customerData);
 
                 req.flash("success_messages", `Changes to Customer ${user.get('name')} has been saved successfully.`);
                 res.redirect('/customers');            

@@ -26,7 +26,6 @@ router.get('/', async (req, res)=> {
 // -------------------------
 
 router.get('/create', async (req, res) => {
-    console.log("Categories Create")
     const categoryForm = createCategoryForm();
     res.render('categories/create', {
         'form' : categoryForm.toHTML(bootstrapField)
@@ -107,6 +106,5 @@ router.post('/:category_id/delete', async (req, res) => {
     req.flash("success_messages", `Deleted Category ${CategoryName} successfully.`);
     res.redirect('/categories');
 })
-
 
 module.exports = router

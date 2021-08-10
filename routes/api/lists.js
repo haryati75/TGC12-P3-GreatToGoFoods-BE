@@ -18,11 +18,9 @@ router.get('/brands', async(req, res)=> {
 })
 
 router.get('/brands/:brand_id', async(req, res) => {
-    
     let brandId = req.params.brand_id;
     try {
         let brand = await getBrandById(brandId)
-        // console.log("route api /brands with id:", brandId, brand)
         if (brand) {
             res.status(200);
             res.send(brand);

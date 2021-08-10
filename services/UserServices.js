@@ -83,7 +83,6 @@ class UserServices {
         try {
             if (await this.isPasswordMatch(oldPassword) === true) {
                 const user = await setUserPassword(this.user_id, this.getHashedPassword(newPassword))
-                console.log("Password changed.")
                 return user;
             } else {
                 console.log("Password did not match!!")
@@ -98,10 +97,9 @@ class UserServices {
     resetPassword = async (newPassword) => {
         try {
             const user = await setUserPassword(this.user_id, this.getHashedPassword(newPassword))
-            console.log("Password changed.")
             return user;
         } catch (e) {
-            console.log("Error changing password: ", e)
+            console.log("Error reset password: ", e)
             return null;
         }
     }

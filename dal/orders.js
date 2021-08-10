@@ -49,7 +49,6 @@ const getOrderByStripeId = async (stripeSessionId) => {
     return order;
 }
 
-
 const getPendingOrderByCustomerId = async (customerId) => {
     let order = await Order.where({
         customer_id : customerId,
