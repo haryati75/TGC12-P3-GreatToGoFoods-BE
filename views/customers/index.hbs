@@ -20,8 +20,10 @@ Customers
             <th>Email</th>
             <th>Address</th>
             <th>Postal Code</th>
+            <th>Status</th>
             <th>Registered On</th>
             <th>Last Login</th>
+            <th>For Action</th>
             <th></th>
         </tr>
     </thead>
@@ -34,10 +36,17 @@ Customers
                 <td>{{this.user.email}}</td>
                 <td>{{this.address_blk}} {{this.address_unit}} {{this.address_street_1}} {{this.address_street_2}}</td>
                 <td>Singapore {{this.address_postal_code}}</td>
+                <td>{{this.user.role}}</td>
                 <td>{{this.createdOnStr}}</td>
                 <td>{{this.lastLoginOnStr}}</td>
                 <td>
-                    <a href="/users/{{this.user_id}}/role/Customer/deactivate" class="btn btn-warning btn-sm">Deactivate</a>
+                    {{#if this.isDeactivated}}
+                        <a href="/users/{{this.user_id}}/role/verify" class="btn btn-success btn-sm">Verify</a>
+                    {{else}}
+                        <a href="/users/{{this.user_id}}/role/Customer/deactivate" class="btn btn-warning btn-sm">Deactivate</a>
+                    {{/if}}
+                </td>
+                <td>
                     <a href="/customers/{{this.user_id}}/update" class="btn btn-primary btn-sm my-1">Edit</a>
                     <a href="/customers/{{this.user_id}}/delete" class="btn btn-danger btn-sm">Delete</a>
                 </td>
