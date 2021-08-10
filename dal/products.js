@@ -21,7 +21,7 @@ const getAllProductNames = async () => {
 
 const getAllProducts = async () => {
     return await Product.fetchAll({
-        require: true,
+        require: false,
         withRelated: ['category', 'brand', 'tags']
     })
 }

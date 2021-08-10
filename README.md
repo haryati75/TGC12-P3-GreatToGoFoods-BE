@@ -8,7 +8,10 @@ Target users:
 An education-purpose project for TGC Singapore.
 
 ## Objectives:
-To 
+To enable users to perform operations support function:
+1. Administer products (including stocks and fulfilment) and associated tables: tags, categories, brands
+2. Process orders from customer
+3. Administer users and customer information, including access controls and verifications
 
 ## Backend Technologies:
 * NodeJS
@@ -21,6 +24,19 @@ To
 * Cloudinary
 
 ## Database: MySQL to Postgres via ORM Bookshelf/Knex
+Entities:
+1. Products
+2. Orders (One-to-Many with Order Details), (One-to-One with Customer)
+3. Order Details 
+4. Cart Items (One-to-One with Product, One-to-One with User)
+5. Customers (One-to-One with User)
+6. Users
+7. Blacklisted Tokens
+
+Foreign Key Tables for Products:
+1. Tags (Many-to-Many)
+2. Brands (One-to-One)
+3. Categories (One-to-One)
 
 ## Dependencies: 
     "bookshelf": "^1.2.0",
@@ -48,6 +64,38 @@ To
 ## Testing of Backend:
 * Business User/Password: john.doe@mail.com / rotiprata
 * Administrator User/Password: ali.mat@mail.com / metallica
+
+## Critical Path Testing:
+#### **_Scenario 1_**: Receive Paid Customer's Orders - From Processing to Complete
+##### Test Steps:
+1. Click Orders from Menu
+2. Find Order with Status = 'Paid'
+3. Click button _'Check Stock'_ (button visible when status = 'Paid')
+4. Click button _'Deliver'_ (button visible when status = 'Ready to Deliver')
+5. Click button _'Complete'_ (button visible when status = 'Delivering')
+
+##### _Expected Result_: 
+_'Check Stock':_ 
+1. If Product's total Stock + Quantity to Fulfil < 0, then Low Stock -> Status change to **'Processing - Low Stock'**, 
+   Else change Status to **'Ready to Deliver'**
+
+_'Deliver':_ 
+2. if Product's total Stock + Quantity > 0, it will change status to **'Delivering'**, else it will go back to **'Processing - Low Stock'**
+3. Reduce Quantity to Fulfil for each Order Item's Product
+
+_'Complete':_
+4. Change status to **'Complete'** and no other Processing buttons will be visible
+
+
+#### Scenario 2: Low Stock update at Product
+When Product's stock quantity is < 0, the Front-end will show "Low Stock Availability" message but still allows Customers to make orders.  The order quantity will then be captured in Quantity to Fulfil.
+Backend users can update the Product's stock quantity, which will remove the low stock message at the front-end.
+##### Test Steps:
+1. Click Products from Menu
+
+
+
+#### Scenario 3: Authorised User Access: Business users cannot access System Administration module
 
 ## Deployment: 
 Deployed at Heroku
