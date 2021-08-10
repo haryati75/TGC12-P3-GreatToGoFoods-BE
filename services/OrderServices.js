@@ -7,8 +7,7 @@ class OrderServices {
     async processProductsFulfilment (orderItems) {
         for (let item of orderItems) {
             try {
-                let product = await updateProductQuantityToFulfil(item.product_id, -(item.quantity))
-                console.log("Updated product quantity to fulfill", product.get('quantity_to_fulfill'));
+                await updateProductQuantityToFulfil(item.product_id, -(item.quantity))
             } catch (e) {
                 console.log("Failed update to Product Quantity to Fulfill", item.product_id, item.quantity, e)
             }

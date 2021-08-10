@@ -32,23 +32,30 @@ router.post('/login', async (req, res) => {
     try {
         const email = req.body.email;
         const user = await getUserByEmail(email);
-        const userServices = new UserServices(user.get('id'));
-        let result = await userServices.isPasswordMatch(req.body.password)
-        if (result === true) {
-            let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1d');
-            let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '3d');
-            // save login datetime
-            user.set('last_login_on', new Date());
-            await user.save();
-            res.status(200);
-            res.json({
-                accessToken, refreshToken, 
-                userName : user.get('name')
-            })
+        if (!user.get('role').includes("Deactivated")) {
+            const userServices = new UserServices(user.get('id'));
+            let result = await userServices.isPasswordMatch(req.body.password)
+            if (result === true) {
+                let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '1d');
+                let refreshToken = generateAccessToken(user, process.env.REFRESH_TOKEN_SECRET, '3d');
+                // save login datetime
+                user.set('last_login_on', new Date());
+                await user.save();
+                res.status(200);
+                res.json({
+                    accessToken, refreshToken, 
+                    userName : user.get('name')
+                })
+            } else {
+                res.status(401);
+                res.json({
+                    'error': 'Wrong credentials provided.'
+                })
+            }
         } else {
-            res.status(401);
+            res.status(403);
             res.json({
-                'error': 'Wrong credentials provided.'
+                'error': 'Unauthorised credentials provided.'
             })
         }
     } catch (e) {
