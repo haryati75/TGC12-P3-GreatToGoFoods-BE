@@ -1,10 +1,20 @@
 # GreatToGo Foods eShop - Backend
 This is the backend administration module for the GreatToGo Foods eShop. An education-purpose project for TGC Singapore.
 
-Website: https://hh-tgc12p3-greattogo.herokuapp.com/
+Backend Website: https://hh-tgc12p3-greattogo.herokuapp.com/
+
+Frontend Website: https://greattogo-foods.netlify.app/
+
+Frontend documentation can be found at Github repo: https://github.com/haryati75/tgc12-p3-gtgfoods
+
+Following screens will appear before and after login:
+
+![Main Site before login](./gtg-be-desktop.png)
+
+![Main Site after login](./gtg-be-desktop-main.png)
 
 ## Business Goal:  
-A meal-delivery site targeting health-conscious foodies to buy ready-to-eat meals, snacks and beverages. 
+A meal-delivery eCommerce shop targeting health-conscious foodies in Singapore to buy ready-to-eat meals, snacks and beverages. 
 
 ### Target users for the Backend Module: 
 1. Business users (or Business owner's authorized personnel)
@@ -39,6 +49,7 @@ To enable users to perform operations support function:
 * Caolan Forms
 * Bootstrap
 * Flash messages 
+
 
 ## Development environment:
 * Gitpod Workspace (use of _Code Institute_ template for students)
@@ -133,6 +144,8 @@ Login as Business User (john.doe@mail.com/rotiprata)
 3. Click button _'Check Stock'_ (button visible when status = 'Paid')
 4. Click button _'Deliver'_ (button visible when status = 'Ready to Deliver')
 5. Click button _'Complete'_ (button visible when status = 'Delivering')
+
+![Order Processing](./gtg-be-desktop-orders.png)
 
 ##### _Expected Result_: 
 
