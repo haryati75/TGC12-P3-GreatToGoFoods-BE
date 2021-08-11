@@ -1,6 +1,8 @@
 # GreatToGo Foods eShop - Backend
 This is the backend administration module for the GreatToGo Foods eShop. An education-purpose project for TGC Singapore.
 
+Website: https://hh-tgc12p3-greattogo.herokuapp.com/
+
 ## Business Goal:  
 A meal-delivery site targeting health-conscious foodies to buy ready-to-eat meals, snacks and beverages. 
 
@@ -47,6 +49,9 @@ Use of Object-relational Mapping Library (ORM) - **Bookshelf and Knex** to acces
 1. MySQL for Development in Gitpod 
 2. Postgres for Deployment at Heroku
 
+The final Logical Schema for the database is shown below:
+![GreatToGo DB Logical Schema](./gtg-logicalschema-firstdeploy.JPG)
+
 ## Entity Models:
 1. Products
 2. Orders (One-to-Many with Order Details), (One-to-One with Customer)
@@ -56,7 +61,7 @@ Use of Object-relational Mapping Library (ORM) - **Bookshelf and Knex** to acces
 6. Users
 7. Blacklisted Tokens
 
-Foreign Key Tables for Products:
+### Foreign Key Tables for Products:
 1. Tags (Many-to-Many) 
 2. Brands (One-to-One) 
 3. Categories (One-to-One) - Admin access only
