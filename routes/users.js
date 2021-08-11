@@ -191,7 +191,7 @@ router.post('/login', (req, res) => {
     })
 })
 
-router.get('/:user_id/role/verify', async (req, res) => {
+router.get('/:user_id/role/verify', checkIfAuthenticatedAdmin, async (req, res) => {
     const userServices = new UserServices(req.params.user_id);
     let user = await userServices.verifyNewUser();
     if (user) {
@@ -263,7 +263,7 @@ router.post('/:user_id/update', async (req, res) => {
 
 // Routes: Delete Existing Record
 // -------------------------------
-router.get('/:user_id/delete', async (req, res) => {
+router.get('/:user_id/delete', checkIfAuthenticatedAdmin, async (req, res) => {
     const userId = req.params.user_id;
     const user = await getUserById(userId);
 
@@ -272,7 +272,7 @@ router.get('/:user_id/delete', async (req, res) => {
     })
 })
 
-router.post('/:user_id/delete', async (req, res) => {
+router.post('/:user_id/delete', checkIfAuthenticatedAdmin, async (req, res) => {
     const userId = req.params.user_id;
     const user = await getUserById(userId);
     const userName = user.get('name');
