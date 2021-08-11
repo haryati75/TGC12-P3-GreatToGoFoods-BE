@@ -50,18 +50,22 @@ To enable users to perform operations support function:
 * Bootstrap
 * Flash messages 
 
-
 ## Development environment:
 * Gitpod Workspace (use of _Code Institute_ template for students)
 * Github repository
 
 ## Databases: 
-Use of Object-relational Mapping Library (ORM) - **Bookshelf and Knex** to access:
+Use of Object-relational Mapping Library (ORM) - **db-migrate, Bookshelf and Knex** to access:
 1. MySQL for Development in Gitpod 
 2. Postgres for Deployment at Heroku
 
 The final Logical Schema for the database is shown below:
 ![GreatToGo DB Logical Schema](./gtg-logicalschema-firstdeploy.JPG)
+
+### db-migrate files:
+1. Each table has its own file
+2. Foreign keys are added as separate files
+3. Subsequent addition of each field are in separate files
 
 ## Entity Models:
 1. Products
@@ -130,8 +134,8 @@ REST API to frontend are maintained in the _\routes\api_ folder. Key APIs are fo
 
 ## Testing of Backend:
 Users email logins with password for testing:
-* Business: john.doe@mail.com / rotiprata
-* Administrator: ali.mat@mail.com / metallica
+* Administrator: john.doe@mail.com / rotiprata
+* Business: ali.mat@mail.com / metallica
 * Customer: billie.joel@mail.com / rotiprata
 
 Below are test cases for critical path:
@@ -194,7 +198,7 @@ app.listen(process.env.PORT, () => {
     console.log("Server has started");
 });
 ```
-Deployed at Heroku with added database Postgres.
+Deployed at Heroku (free plan) with added database Postgres.
 Push deployment changes to Heroku
 ```
 git add .
