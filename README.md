@@ -1,11 +1,12 @@
-# GreatToGo Foods eShop
-This is the backend administration module for the GreatToGo Foods eShop. 
+# GreatToGo Foods eShop - Backend
+This is the backend administration module for the GreatToGo Foods eShop. An education-purpose project for TGC Singapore.
 
-Target users: 
+## Business Goal:  
+A meal-delivery site targeting health-conscious foodies to buy ready-to-eat meals, snacks and beverages. 
+
+### Target users for the Backend Module: 
 1. Business users (or Business owner's authorized personnel)
 2. System administrators
-
-An education-purpose project for TGC Singapore.
 
 ## Objectives:
 To enable users to perform operations support function:
@@ -14,17 +15,39 @@ To enable users to perform operations support function:
 3. Administer users and customer information, including access controls and verifications
 
 ## Backend Technologies:
-* NodeJS
+* NodeJS Framework
 * Express
-* REST API
+* REST API, webhooks
 
-## Third-parties API with webhooks, tokens:
-* Stripe
-* EmailJS
-* Cloudinary
+## Third-parties API Webhooks:
+* Stripe - payment services
+* EmailJS - email services
+* Cloudinary - image uploading services
 
-## Database: MySQL to Postgres via ORM Bookshelf/Knex
-Entities:
+## Authentication, tokens & Sessions
+* JSON Web Token
+* CORS
+* CSRF
+* Crypto
+* Session-file-store
+* Express-sessions
+
+## Backend UI
+* HBS templates
+* Caolan Forms
+* Bootstrap
+* Flash messages 
+
+## Development environment:
+* Gitpod Workspace (use of _Code Institute_ template for students)
+* Github repository
+
+## Databases: 
+Use of Object-relational Mapping Library (ORM) - **Bookshelf and Knex** to access:
+1. MySQL for Development in Gitpod 
+2. Postgres for Deployment at Heroku
+
+## Entity Models:
 1. Products
 2. Orders (One-to-Many with Order Details), (One-to-One with Customer)
 3. Order Details 
@@ -34,9 +57,37 @@ Entities:
 7. Blacklisted Tokens
 
 Foreign Key Tables for Products:
-1. Tags (Many-to-Many)
-2. Brands (One-to-One)
-3. Categories (One-to-One)
+1. Tags (Many-to-Many) 
+2. Brands (One-to-One) 
+3. Categories (One-to-One) - Admin access only
+
+_Note: CRUD operations is also available for all Foreign Key tables._ 
+
+## Data Access Layers 
+Key Data Access Layers were created for the following Models:
+1. products
+2. customers
+3. users
+4. cart_items
+5. orders
+
+## Services Layers
+The above DALs provided the common access of the Models to the following Services with provides functions used by both backend routes and APIs to front-end:
+1. **UserServices**
+    * Provides user administration, authentication and session controls
+2. **CartServices**
+    * Provides cart-related functions and payment services integration from the front-end to Stripe payment API
+3. **OrderServices**
+    * Provide order fulfilment functions in updating of order statuses and product's stock and fulfilment quantities
+
+## Routes and REST API
+Backend Routes are used to manage navigation for internal pages which uses HBS.
+
+REST API to frontend are maintained in the _\routes\api_ folder. Key APIs are found in subfolders:
+1. checkout.js
+2. products.js
+3. shoppingCart.js
+4. users.js
 
 ## Dependencies: 
     "bookshelf": "^1.2.0",
@@ -62,12 +113,16 @@ Foreign Key Tables for Products:
     "wax-on": "^1.2.2"
 
 ## Testing of Backend:
-* Business User/Password: john.doe@mail.com / rotiprata
-* Administrator User/Password: ali.mat@mail.com / metallica
+Users email logins with password for testing:
+* Business: john.doe@mail.com / rotiprata
+* Administrator: ali.mat@mail.com / metallica
+* Customer: billie.joel@mail.com / rotiprata
 
-## Critical Path Testing:
-#### **_Scenario 1_**: Receive Paid Customer's Orders - From Processing to Complete
+Below are test cases for critical path:
+
+### **_Scenario 1_**: Receive Paid Customer's Orders - From Processing to Complete
 ##### Test Steps:
+Login as Business User (john.doe@mail.com/rotiprata)
 1. Click Orders from Menu
 2. Find Order with Status = 'Paid'
 3. Click button _'Check Stock'_ (button visible when status = 'Paid')
@@ -75,29 +130,94 @@ Foreign Key Tables for Products:
 5. Click button _'Complete'_ (button visible when status = 'Delivering')
 
 ##### _Expected Result_: 
+
 _'Check Stock':_ 
-1. If Product's total Stock + Quantity to Fulfil < 0, then Low Stock -> Status change to **'Processing - Low Stock'**, 
+  1. If Product's total **"Quantity in Stock + Quantity to Fulfil"** < 0, then Low Stock -> Status change to **'Processing - Low Stock'**, 
    Else change Status to **'Ready to Deliver'**
 
-_'Deliver':_ 
-2. if Product's total Stock + Quantity > 0, it will change status to **'Delivering'**, else it will go back to **'Processing - Low Stock'**
-3. Reduce Quantity to Fulfil for each Order Item's Product
+_'Deliver':_  
+
+  2. if Product's total Stock + Quantity > 0, it will change status to **'Delivering'**, 
+   Else it will go back to **'Processing - Low Stock'**
+
+  3. Reduce Quantity to Fulfil for each Order Item's Product
 
 _'Complete':_
 4. Change status to **'Complete'** and no other Processing buttons will be visible
-
-
-#### Scenario 2: Low Stock update at Product
-When Product's stock quantity is < 0, the Front-end will show "Low Stock Availability" message but still allows Customers to make orders.  The order quantity will then be captured in Quantity to Fulfil.
-Backend users can update the Product's stock quantity, which will remove the low stock message at the front-end.
+ 
+  
+### **_Scenario 2_**: Low Stock update at Product
+_When Product's stock quantity is < 0, the Front-end will show "Low Stock Availability" message but still allows Customers to make orders.  
+The order quantity will then be updated into **_Quantity to Fulfil_** in Products. Backend users can update the Product's stock quantity, which will remove the low stock message at the front-end._
 ##### Test Steps:
-1. Click Products from Menu
+1. Click Products from Menu, to goto Product Listing
+2. Enter Quantity (+/-) into selected Product's **Add Stock**
+3. Click on **Add** button
 
+##### _Expected Result_: 
+1. Selected Product's Stock Available will be increased or decreased based on Quantity updated
 
+### **_Scenario 3_**: Business users cannot access System Administration module 
+1. Login as Business User (ali.mat@mail.com/metallica)
+2. Go to Users or Categories in the Menu
+##### _Expected Result_: 
+1. Red boxed message appears below Menu: "You are not authorized to access that page..."
 
-#### Scenario 3: Authorised User Access: Business users cannot access System Administration module
+### **_Scenario 4_**: Customer-Users cannot access the Backend module 
+1. Login as Customer User (billie.joel@mail.com/rotiprata)
 
+##### _Expected Result_: 
+1. Red boxed message appears below Menu: "Sorry you have provided the wrong credentials"
+  
 ## Deployment: 
-Deployed at Heroku
+Change port 3000 to process.env.PORT in app.listen():
+```
+app.listen(process.env.PORT, () => {
+    console.log("Server has started");
+});
+```
+Deployed at Heroku with added database Postgres.
+Push deployment changes to Heroku
+```
+git add .
+git commit -m "Deploy to Heroku"
+git push heroku master
+```
 
-Developed by Haryati Hassan, TGC Batch 12
+Copy Global variables:
+```
+BASE_URL=<deployed Heroku URL>
+APP_URL=<deployed Netlify URL>
+DB_DRIVER=<postgres>
+DB_USER=<postgres db user id>
+DB_PASSWORD=<postgres db password>
+DB_DATABASE=<postgres db name>
+DB_HOST=<postgres host>
+SESSION_SECRET_KEY=<key for backend session>
+CLOUDINARY_NAME=<your cloudinary name>
+CLOUDINARY_API_KEY=<your cloudinary API key>
+CLOUDINARY_API_SECRET=<your cloudinary API secret>
+CLOUDINARY_UPLOAD_PRESET=<upload preset from cloudinary>
+STRIPE_KEY_PUBLISHABLE=<your stripe publishable key>
+STRIPE_KEY_SECRET=<your stripe secret key>
+STRIPE_SUCCESS_URL=/checkout/success
+STRIPE_ERROR_URL=/checkout/cancelled
+STRIPE_ENDPOINT_SECRET=<your stripe webhook endpoint key>
+TOKEN_SECRET=<key for api access token>
+REFRESH_TOKEN_SECRET=<key for api refresh token>
+EMAILJS_USERID=<emailjs user id>
+```
+### Tokens and Keys:
+1. Create new Endpoints at Stripe Developers Webhooks for event: _checkout.session.completed_
+2. Retrieve new STRIPE_ENDPOINT_SECRET key
+3. Go to Random Key generator (https://randomkeygen.com/) to generate tokens for:
+ * SESSION_SECRET_KEY
+ * TOKEN_SECRET
+ * REFRESH_TOKEN_SECRET
+
+
+## Credits:
+Trent Global College, Singapore
+
+Developed by: Haryati Hassan, TGC Batch 12
+August 2021
